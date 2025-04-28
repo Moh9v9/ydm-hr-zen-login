@@ -1,10 +1,7 @@
 
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Check } from "lucide-react";
-import { useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { Check, ChevronLeft } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
@@ -14,16 +11,17 @@ import { LegalInfoSection } from "./form-sections/LegalInfoSection";
 import { WorkInfoSection } from "./form-sections/WorkInfoSection";
 import { CompensationSection } from "./form-sections/CompensationSection";
 import { PermissionsSection } from "./form-sections/PermissionsSection";
+import { useCreateEmployee } from "@/hooks/use-create-employee";
 
 interface CreateEmployeeFormProps {
   onClose: () => void;
 }
 
 export function CreateEmployeeForm({ onClose }: CreateEmployeeFormProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const queryClient = useQueryClient();
   const isMobile = useIsMobile();
+  const { createEmployee, isSubmitting, error } = useCreateEmployee({
+    onSuccess: onClose,
+  });
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -47,36 +45,7 @@ export function CreateEmployeeForm({ onClose }: CreateEmployeeFormProps) {
   });
 
   const onSubmit = async (data: FormValues) => {
-    setIsSubmitting(true);
-    setError(null);
-
-    try {
-      const response = await fetch("https://n8n.moh9v9.com/webhook/google-proxy", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          entity: "employees",
-          operation: "add",
-          data: data,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        throw new Error(errorData?.message || "Failed to create employee");
-      }
-
-      toast.success("Employee created successfully");
-      queryClient.invalidateQueries({ queryKey: ["employees"] });
-      onClose();
-    } catch (err) {
-      console.error("Error creating employee:", err);
-      setError(err instanceof Error ? err.message : "An unexpected error occurred");
-    } finally {
-      setIsSubmitting(false);
-    }
+    await createEmployee(data);
   };
 
   return (
