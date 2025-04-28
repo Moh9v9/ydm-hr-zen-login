@@ -93,8 +93,8 @@ export function SidebarProvider({
       <TooltipProvider delayDuration={0}>
         <div
           style={{
-            "--sidebar-width": "16rem",
-            "--sidebar-width-icon": "3rem",
+            "--sidebar-width": "240px",
+            "--sidebar-width-icon": "64px",
             ...style,
           } as React.CSSProperties}
           className={cn(
