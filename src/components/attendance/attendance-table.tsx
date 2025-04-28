@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { AlertTriangle } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -8,6 +9,7 @@ import { AttendanceStatus } from "./table/attendance-status";
 import { EmployeeInfo } from "./table/employee-info";
 import { AttendanceInputs } from "./table/attendance-inputs";
 import { MobileAttendanceRow } from "./table/mobile-attendance-row";
+import { cn } from "@/lib/utils";
 
 interface AttendanceTableProps {
   attendanceData: AttendanceRecord[];
