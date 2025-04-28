@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { type FormValues } from "@/components/employees/schema/employee-form-schema";
@@ -16,13 +16,17 @@ export function useUpdateEmployee({ employeeId, onSuccess }: UseUpdateEmployeePr
   const [employee, setEmployee] = useState<FormValues | null>(null);
   const queryClient = useQueryClient();
 
-  const fetchEmployee = async (id: string) => {
-    if (!id) return;
+  const fetchEmployee = useCallback(async (id: string) => {
+    if (!id) {
+      setError("No employee ID provided");
+      return;
+    }
     
     setIsLoading(true);
     setError(null);
 
     try {
+      console.log(`Fetching employee data for ID: ${id}`);
       const response = await fetch("https://n8n.moh9v9.com/webhook/google-proxy", {
         method: "POST",
         headers: {
@@ -41,6 +45,12 @@ export function useUpdateEmployee({ employeeId, onSuccess }: UseUpdateEmployeePr
       }
 
       const employeeData = await response.json();
+      
+      if (!employeeData || employeeData.error) {
+        throw new Error(employeeData?.error || "Failed to retrieve employee data");
+      }
+
+      console.log("Employee data fetched successfully:", employeeData);
       
       // Convert API response to form values format
       const formData: FormValues = {
@@ -71,7 +81,7 @@ export function useUpdateEmployee({ employeeId, onSuccess }: UseUpdateEmployeePr
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   const updateEmployee = async (data: FormValues) => {
     if (!employeeId) {
@@ -83,6 +93,7 @@ export function useUpdateEmployee({ employeeId, onSuccess }: UseUpdateEmployeePr
     setError(null);
 
     try {
+      console.log(`Updating employee with ID: ${employeeId}`);
       const response = await fetch("https://n8n.moh9v9.com/webhook/google-proxy", {
         method: "POST",
         headers: {

@@ -51,12 +51,12 @@ export function EditEmployeeForm({ employeeId, onClose }: EditEmployeeFormProps)
     },
   });
 
-  // Fetch employee data on component mount
+  // Fetch employee data as soon as the component mounts
   useEffect(() => {
     if (employeeId) {
       fetchEmployee(employeeId);
     }
-  }, [employeeId]);
+  }, [employeeId, fetchEmployee]);
 
   // Update form with employee data when it's loaded
   useEffect(() => {
