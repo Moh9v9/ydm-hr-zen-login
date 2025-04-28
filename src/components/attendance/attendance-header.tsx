@@ -1,21 +1,26 @@
 
 import { format } from "date-fns";
 import { Calendar } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { ar, enUS } from "date-fns/locale";
 
 interface AttendanceHeaderProps {
   selectedDate: Date;
 }
 
 export function AttendanceHeader({ selectedDate }: AttendanceHeaderProps) {
-  const formattedDate = format(selectedDate, "EEEE, MMMM d, yyyy");
+  const { t, language } = useLanguage();
+  
+  const locale = language === "ar" ? ar : enUS;
+  const formattedDate = format(selectedDate, "EEEE, MMMM d, yyyy", { locale });
   
   return (
     <div className="flex flex-col gap-2">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-3xl font-bold">Attendance</h2>
+          <h2 className="text-3xl font-bold">{t("attendance.title")}</h2>
           <p className="text-muted-foreground">
-            Manage daily attendance for employees
+            {t("attendance.subtitle")}
           </p>
         </div>
         <div className="flex items-center gap-2">

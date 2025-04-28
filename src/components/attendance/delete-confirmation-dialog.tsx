@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,6 +29,7 @@ export function DeleteConfirmationDialog({
   employeeName,
 }: DeleteConfirmationDialogProps) {
   const [isDeleting, setIsDeleting] = useState(false);
+  const { t } = useLanguage();
 
   const handleConfirmDelete = async () => {
     setIsDeleting(true);
@@ -45,14 +47,15 @@ export function DeleteConfirmationDialog({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>حذف سجل الحضور</AlertDialogTitle>
+          <AlertDialogTitle>{t("attendance.delete.title")}</AlertDialogTitle>
           <AlertDialogDescription>
-            هل أنت متأكد أنك تريد حذف سجل الحضور لـ {employeeName}؟
-            لا يمكن التراجع عن هذا الإجراء.
+            {t("attendance.delete.confirmation")} {employeeName}؟
+            <br />
+            {t("attendance.delete.warning")}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isDeleting}>إلغاء</AlertDialogCancel>
+          <AlertDialogCancel disabled={isDeleting}>{t("common.actions.cancel")}</AlertDialogCancel>
           <AlertDialogAction
             onClick={(e) => {
               e.preventDefault();
@@ -64,10 +67,10 @@ export function DeleteConfirmationDialog({
             {isDeleting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                جاري الحذف...
+                {t("attendance.delete.deleting")}
               </>
             ) : (
-              "حذف"
+              t("attendance.delete.delete")
             )}
           </AlertDialogAction>
         </AlertDialogFooter>

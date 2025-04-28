@@ -5,6 +5,7 @@ import { Header } from "@/components/navigation/header"
 import { useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { useAuth } from "@/contexts/AuthContext"
+import { useLanguage } from "@/contexts/LanguageContext"
 import { LoadingScreen } from "@/components/LoadingScreen"
 import { AlertCircle } from "lucide-react"
 
@@ -14,6 +15,7 @@ export interface AppLayoutProps {
 
 export function AppLayout({ children }: AppLayoutProps) {
   const { user, isLoading } = useAuth();
+  const { isRTL, t } = useLanguage();
   const navigate = useNavigate();
   const [authChecked, setAuthChecked] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -46,13 +48,13 @@ export function AppLayout({ children }: AppLayoutProps) {
           <div className="bg-red-100 text-red-500 rounded-full p-3 mb-4">
             <AlertCircle className="h-8 w-8" />
           </div>
-          <h2 className="text-xl font-bold mb-2">Something went wrong</h2>
+          <h2 className="text-xl font-bold mb-2">{t("common.status.error")}</h2>
           <p className="text-muted-foreground mb-4">{error}</p>
           <button 
             className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
             onClick={() => window.location.reload()}
           >
-            Refresh page
+            {t("common.actions.refresh")}
           </button>
         </div>
       </div>
@@ -71,7 +73,7 @@ export function AppLayout({ children }: AppLayoutProps) {
 
   return (
     <SidebarProvider defaultOpen={true}>
-      <div className="min-h-screen flex w-full">
+      <div className={`min-h-screen flex w-full ${isRTL ? "rtl" : "ltr"}`}>
         <MainSidebar />
         <div className="flex-1 flex flex-col h-screen overflow-auto">
           <Header />
