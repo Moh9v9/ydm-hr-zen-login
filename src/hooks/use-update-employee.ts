@@ -37,7 +37,7 @@ export function useUpdateEmployee({ employeeId, onSuccess }: UseUpdateEmployeePr
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
-        throw new Error(errorData?.message || "Failed to fetch employee");
+        throw new Error(errorData?.message || "Failed to fetch employee data");
       }
 
       const employeeData = await response.json();
@@ -66,7 +66,7 @@ export function useUpdateEmployee({ employeeId, onSuccess }: UseUpdateEmployeePr
       setEmployee(formData);
     } catch (err) {
       console.error("Error fetching employee:", err);
-      setError(err instanceof Error ? err.message : "An unexpected error occurred");
+      setError(err instanceof Error ? err.message : "Failed to load employee data");
       toast.error("Failed to load employee data");
     } finally {
       setIsLoading(false);
@@ -92,7 +92,10 @@ export function useUpdateEmployee({ employeeId, onSuccess }: UseUpdateEmployeePr
           entity: "employees",
           operation: "update",
           id: employeeId,
-          data: data,
+          data: {
+            ...data,
+            employee_id: employeeId, // Include employee_id in the update data
+          },
         }),
       });
 

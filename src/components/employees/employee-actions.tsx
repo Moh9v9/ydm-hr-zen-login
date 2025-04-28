@@ -117,7 +117,7 @@ export function EmployeeActions({ employee }: EmployeeActionsProps) {
       </AlertDialog>
 
       <EditEmployeeModal 
-        employeeId={employee.employee_id} 
+        employeeId={employee.employee_id}
         open={showEditModal} 
         onOpenChange={setShowEditModal} 
       />

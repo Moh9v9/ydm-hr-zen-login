@@ -6,7 +6,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { EditEmployeeForm } from "./edit-employee-form";
 
 interface EditEmployeeModalProps {
-  employeeId: string;
+  employeeId: string; // This is employee_id
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
