@@ -73,10 +73,12 @@ export function AppLayout({ children }: AppLayoutProps) {
     <SidebarProvider defaultOpen={true}>
       <div className="min-h-screen flex w-full">
         <MainSidebar />
-        <main className="flex-1 h-screen overflow-auto">
+        <div className="flex-1 flex flex-col h-screen overflow-auto">
           <Header />
-          {children}
-        </main>
+          <div className="flex-1 p-4">
+            {children}
+          </div>
+        </div>
       </div>
     </SidebarProvider>
   );

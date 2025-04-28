@@ -1,42 +1,56 @@
 
 import { useState } from "react";
 import { useLocation, Link } from "react-router-dom";
-import { Sidebar, SidebarContent, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
+import { 
+  Sidebar, 
+  SidebarContent, 
+  SidebarMenu, 
+  SidebarMenuButton, 
+  SidebarMenuItem, 
+  SidebarTrigger, 
+  useSidebar 
+} from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
 import { LayoutDashboard, Users, CalendarDays, Wallet, FileText, User, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const navigationItems = [{
-  title: "Dashboard",
-  path: "/dashboard",
-  icon: LayoutDashboard
-}, {
-  title: "Employees",
-  path: "/employees",
-  icon: Users
-}, {
-  title: "Attendance",
-  path: "/attendance",
-  icon: CalendarDays
-}, {
-  title: "Payroll",
-  path: "/payroll",
-  icon: Wallet
-}, {
-  title: "Leaves",
-  path: "/leaves",
-  icon: FileText
-}, {
-  title: "Users",
-  path: "/users",
-  icon: User
-}];
+const navigationItems = [
+  {
+    title: "Dashboard",
+    path: "/dashboard",
+    icon: LayoutDashboard
+  },
+  {
+    title: "Employees",
+    path: "/employees",
+    icon: Users
+  },
+  {
+    title: "Attendance",
+    path: "/attendance",
+    icon: CalendarDays
+  },
+  {
+    title: "Payroll",
+    path: "/payroll",
+    icon: Wallet
+  },
+  {
+    title: "Leaves",
+    path: "/leaves",
+    icon: FileText
+  },
+  {
+    title: "Users",
+    path: "/users",
+    icon: User
+  }
+];
 
 export function MainSidebar() {
   const location = useLocation();
   const {
     isMobile,
-    setOpen,
     setOpenMobile,
     state
   } = useSidebar();
@@ -50,21 +64,24 @@ export function MainSidebar() {
 
   return (
     <>
-      <Button 
-        variant="ghost" 
-        size="icon" 
-        className={cn(
-          "fixed top-20 z-30 lg:block transition-all duration-300", // Changed top-4 to top-20 to position below header
-          state === "expanded" ? "left-[calc(var(--sidebar-width)_-_3rem)]" : "left-20"
-        )} 
-        asChild
-      >
-        <SidebarTrigger>
-          <Menu className="h-6 w-6" />
-          <span className="sr-only">Toggle Menu</span>
+      {/* Sidebar toggle button - positioned outside the sidebar */}
+      <div className={cn(
+        "fixed left-0 top-20 z-20 transition-all duration-300",
+        state === "expanded" ? "left-[220px]" : "left-[60px]"
+      )}>
+        <SidebarTrigger asChild>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="bg-background/80 backdrop-blur"
+          >
+            <Menu className="h-5 w-5" />
+            <span className="sr-only">Toggle Sidebar</span>
+          </Button>
         </SidebarTrigger>
-      </Button>
+      </div>
 
+      {/* Main sidebar component */}
       <Sidebar 
         className="border-r bg-card"
         style={{ 
@@ -72,6 +89,12 @@ export function MainSidebar() {
           "--sidebar-width-icon": "64px"
         } as React.CSSProperties}
       >
+        <div className="flex h-16 items-center justify-center border-b">
+          <span className="text-lg font-semibold text-primary">
+            {state === "expanded" ? "YDM HR" : "YDM"}
+          </span>
+        </div>
+        
         <SidebarContent className="p-2">
           <SidebarMenu>
             {navigationItems.map(item => (
