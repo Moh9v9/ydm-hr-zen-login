@@ -39,20 +39,16 @@ export function MainSidebar() {
   const { isMobile, setOpen, setOpenMobile } = useSidebar()
   const [username] = useState("John Doe") // Replace with actual user data later
 
-  // Handler to close sidebar after navigation
   const handleNavigation = () => {
-    // On mobile, fully close the sidebar
     if (isMobile) {
       setOpenMobile(false)
     } else {
-      // On desktop, collapse the sidebar
       setOpen(false)
     }
   }
 
   return (
     <>
-      {/* Mobile Menu Trigger */}
       {isMobile && (
         <Button
           variant="ghost"
@@ -67,16 +63,15 @@ export function MainSidebar() {
         </Button>
       )}
 
-      {/* Main Sidebar */}
       <Sidebar className="border-r bg-card">
         <SidebarHeader className="p-4">
-          <div className="flex items-center gap-2 px-2">
+          <div className="flex items-center gap-2 px-2 min-w-max">
             <img
               src="https://i.ibb.co/DPfXmyDz/YDM-logo2-2.png"
               alt="YDM HR Logo"
               className="h-8 w-8"
             />
-            <span className="font-semibold text-lg text-foreground">YDM HR</span>
+            <span className="font-semibold text-lg text-foreground whitespace-nowrap">YDM HR</span>
           </div>
         </SidebarHeader>
 
@@ -93,7 +88,7 @@ export function MainSidebar() {
                   <Link
                     to={item.path}
                     className={cn(
-                      "w-full",
+                      "w-full whitespace-nowrap",
                       location.pathname === item.path &&
                         "bg-primary text-primary-foreground"
                     )}
@@ -108,8 +103,8 @@ export function MainSidebar() {
         </SidebarContent>
 
         <SidebarFooter className="p-4">
-          <div className="flex items-center gap-2 px-2">
-            <Avatar className="h-8 w-8">
+          <div className="flex items-center gap-2 px-2 min-w-max">
+            <Avatar className="h-8 w-8 shrink-0">
               <AvatarFallback>
                 {username
                   .split(" ")
@@ -117,7 +112,7 @@ export function MainSidebar() {
                   .join("")}
               </AvatarFallback>
             </Avatar>
-            <span className="text-sm font-medium">{username}</span>
+            <span className="text-sm font-medium whitespace-nowrap">{username}</span>
           </div>
         </SidebarFooter>
       </Sidebar>
