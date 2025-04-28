@@ -52,7 +52,8 @@ export function MainSidebar() {
   const {
     isMobile,
     setOpenMobile,
-    state
+    state,
+    toggleSidebar
   } = useSidebar();
   const [username] = useState("John Doe");
 
@@ -69,16 +70,15 @@ export function MainSidebar() {
         "fixed left-0 top-20 z-20 transition-all duration-300",
         state === "expanded" ? "left-[220px]" : "left-[60px]"
       )}>
-        <SidebarTrigger asChild>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            className="bg-background/80 backdrop-blur"
-          >
-            <Menu className="h-5 w-5" />
-            <span className="sr-only">Toggle Sidebar</span>
-          </Button>
-        </SidebarTrigger>
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="bg-background/80 backdrop-blur"
+          onClick={toggleSidebar}
+        >
+          <Menu className="h-5 w-5" />
+          <span className="sr-only">Toggle Sidebar</span>
+        </Button>
       </div>
 
       {/* Main sidebar component */}
