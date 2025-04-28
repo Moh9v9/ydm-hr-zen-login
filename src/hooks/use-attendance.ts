@@ -77,7 +77,7 @@ export const useAttendance = (selectedDate: Date, filters: Filters) => {
           body: JSON.stringify({
             entity: "attendance",
             operation: "read",
-            date: formattedDate,
+            date: formattedDate, // Use the formatted date string
           }),
         });
         
@@ -87,22 +87,23 @@ export const useAttendance = (selectedDate: Date, filters: Filters) => {
         
         const attendanceRecords = await response.json();
         
-        // Map attendance records by employee_id for efficient lookup
-        const attendanceMap = new Map(
-          attendanceRecords.map((record: any) => [record.employee_id, record])
-        );
+        // Map attendance records by employee_id for easier lookup
+        const attendanceMap = new Map();
+        attendanceRecords.forEach((record: any) => {
+          attendanceMap.set(record.employee_id, record);
+        });
         
-        // Prepare combined data array
+        // Prepare data by combining employees with their attendance records
         const combinedData: AttendanceRecord[] = [];
         
-        // First, add all active employees and employees with attendance records
+        // First, add all active employees with or without attendance records
         if (employees) {
           employees.forEach((employee) => {
             const isActive = employee.status?.toLowerCase() === "active";
             const attendanceRecord = attendanceMap.get(employee.employee_id);
             const hasAttendanceRecord = !!attendanceRecord;
             
-            // Include if employee is active OR has an attendance record
+            // Add active employees or inactive employees with attendance records
             if (isActive || hasAttendanceRecord) {
               combinedData.push({
                 employee_id: employee.employee_id,
@@ -123,7 +124,7 @@ export const useAttendance = (selectedDate: Date, filters: Filters) => {
                 date: formattedDate,
               });
               
-              // Remove processed record from the map
+              // Remove this record from the map as it's been processed
               if (hasAttendanceRecord) {
                 attendanceMap.delete(employee.employee_id);
               }
@@ -131,6 +132,7 @@ export const useAttendance = (selectedDate: Date, filters: Filters) => {
           });
         }
         
+        // Copy data to set the original state for comparing changes
         setOriginalData([...combinedData]);
         setAttendanceData([...combinedData]);
         setModifiedRows(new Set());
@@ -144,7 +146,7 @@ export const useAttendance = (selectedDate: Date, filters: Filters) => {
     
     fetchAttendanceData();
   }, [employees, isLoadingEmployees, employeesError, selectedDate]);
-
+  
   // Filter the attendance data
   const filteredAttendanceData = useMemo(() => {
     return attendanceData.filter((record) => {
