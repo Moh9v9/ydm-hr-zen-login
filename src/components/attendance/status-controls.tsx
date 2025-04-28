@@ -28,10 +28,10 @@ export function StatusControls({
           onCheckedChange={onToggleStatus}
           disabled={!isActive}
           className={cn(
-            "transition-colors",
+            "transition-colors relative",
             isPresent
-              ? "bg-green-500 dark:bg-green-600 border-green-300 dark:border-green-700" 
-              : "bg-red-500 dark:bg-red-600 border-red-300 dark:border-red-700"
+              ? "[&>span]:bg-green-500 bg-green-500 dark:bg-green-600 border-green-300 dark:border-green-700" 
+              : "[&>span]:bg-red-500 bg-red-500 dark:bg-red-600 border-red-300 dark:border-red-700"
           )}
         />
         <span className={cn(
