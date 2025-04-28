@@ -15,8 +15,8 @@ export interface AttendanceRecord {
   paymentType: string;
   sponsorship: string;
   hasAttendanceRecord: boolean;
-  startTime: string | null;
-  endTime: string | null;
+  startTime: string | null; // Changed to string | null for direct string storage
+  endTime: string | null;   // Changed to string | null for direct string storage
   overtimeHours: number | null;
   notes: string | null;
   date: string;
@@ -28,8 +28,8 @@ interface RawAttendanceRecord {
   employee_id: string;
   date: string;
   status: string;
-  start_time?: string;
-  end_time?: string;
+  start_time?: string;     // Optional string from API
+  end_time?: string;       // Optional string from API
   overtime?: number;
   note?: string;
 }
@@ -100,13 +100,10 @@ export const useAttendance = (selectedDate: Date, filters: Filters) => {
         const combinedData: AttendanceRecord[] = [];
         
         if (employees) {
-          // Map each employee to their attendance record
           employees.forEach(emp => {
-            // Find attendance record for this employee
             const attendance = attendanceRecords.find(a => a.employee_id === emp.employee_id);
             const isActive = emp.status?.toLowerCase() === "active";
             
-            // Create combined record with correct field mapping
             combinedData.push({
               employee_id: emp.employee_id,
               fullName: emp.fullName,
@@ -119,15 +116,15 @@ export const useAttendance = (selectedDate: Date, filters: Filters) => {
               paymentType: emp.paymentType || "Monthly",
               sponsorship: emp.sponsorship || "",
               hasAttendanceRecord: !!attendance,
-              startTime: attendance?.start_time || null,
-              endTime: attendance?.end_time || null,
+              startTime: attendance?.start_time || null,  // Direct string assignment
+              endTime: attendance?.end_time || null,      // Direct string assignment
               overtimeHours: attendance?.overtime !== undefined ? attendance.overtime : null,
               notes: attendance?.note || null,
               date: formattedDate,
             });
           });
           
-          // Handle any attendance records for unknown employees
+          // Handle attendance records for unknown employees
           attendanceRecords.forEach(record => {
             if (!combinedData.some(data => data.employee_id === record.employee_id)) {
               combinedData.push({
@@ -142,8 +139,8 @@ export const useAttendance = (selectedDate: Date, filters: Filters) => {
                 paymentType: "Monthly",
                 sponsorship: "",
                 hasAttendanceRecord: true,
-                startTime: record.start_time || null,
-                endTime: record.end_time || null,
+                startTime: record.start_time || null,     // Direct string assignment
+                endTime: record.end_time || null,        // Direct string assignment
                 overtimeHours: record.overtime !== undefined ? record.overtime : null,
                 notes: record.note || null,
                 date: formattedDate,
