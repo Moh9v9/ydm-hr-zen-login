@@ -1,5 +1,5 @@
-
 import { useState, useEffect, useMemo } from "react";
+import { format } from "date-fns";
 import { useEmployees } from "./use-employees";
 import { toast } from "sonner";
 
@@ -46,8 +46,9 @@ export const useAttendance = (selectedDate: Date, filters: Filters) => {
   
   const { data: employees, isLoading: isLoadingEmployees, error: employeesError } = useEmployees();
   
+  // Format date as YYYY-MM-DD without timezone concerns
   const formatDateForAPI = (date: Date) => {
-    return date.toISOString().split('T')[0]; // YYYY-MM-DD format
+    return format(date, "yyyy-MM-dd");
   };
   
   // Fetch attendance data
@@ -64,7 +65,7 @@ export const useAttendance = (selectedDate: Date, filters: Filters) => {
       setError(null);
       
       try {
-        // Get formatted date for API
+        // Get formatted date string for API
         const formattedDate = formatDateForAPI(selectedDate);
         
         // Fetch attendance records for this date
@@ -76,7 +77,7 @@ export const useAttendance = (selectedDate: Date, filters: Filters) => {
           body: JSON.stringify({
             entity: "attendance",
             operation: "read",
-            date: formattedDate,
+            date: formattedDate, // Use the formatted date string
           }),
         });
         
