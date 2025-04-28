@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { AlertTriangle, Check, X } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -111,12 +112,14 @@ export function AttendanceTable({
                           checked={record.status === "Present"}
                           onCheckedChange={() => handleToggleStatus(record.employee_id, record.status, record.isActive)}
                           disabled={!record.isActive}
+                          style={{
+                            backgroundColor: record.status === "Present" ? "#22c55e" : "#ef4444"
+                          }}
                           className={cn(
                             "h-5 w-9",
-                            record.status === "Present" 
-                              ? "bg-[#22c55e] data-[state=checked]:bg-[#22c55e]" 
-                              : "bg-[#ef4444] data-[state=unchecked]:bg-[#ef4444]",
-                            !record.isActive && "opacity-50"
+                            !record.isActive && "opacity-50",
+                            // Instead of conditional classes, we're using the style prop above
+                            // to ensure the color is set correctly on initial load
                           )}
                         />
                         <span className={cn(
