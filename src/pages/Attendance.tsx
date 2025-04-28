@@ -51,9 +51,9 @@ export default function Attendance() {
     setIsSaving(true);
     try {
       await saveChanges();
-      toast.success("Attendance records saved successfully");
+      toast.success("Attendance updated successfully");
     } catch (error) {
-      toast.error("Failed to save attendance", {
+      toast.error("Failed to save attendance. Please try again.", {
         description: error instanceof Error ? error.message : "Unknown error"
       });
     } finally {

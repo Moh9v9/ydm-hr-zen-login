@@ -29,21 +29,75 @@ export const fetchAttendanceRecords = async (date: Date): Promise<RawAttendanceR
 };
 
 export const saveAttendanceRecords = async (records: any[]) => {
-  const response = await fetch("https://n8n.moh9v9.com/webhook/google-proxy", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
+  // Group records by whether they have an attendance_id
+  const existingRecords = records.filter(record => record.attendance_id);
+  const newRecords = records.filter(record => !record.attendance_id);
+  
+  const now = new Date().toISOString();
+  
+  // Process update operations if there are existing records
+  if (existingRecords.length > 0) {
+    const updatePayload = {
       entity: "attendance",
       operation: "update",
-      data: records,
-    }),
-  });
+      data: existingRecords.map(record => ({
+        attendance_id: record.attendance_id,
+        employee_id: record.employee_id,
+        fullName: record.fullName,
+        date: record.date,
+        status: record.status.toLowerCase(),
+        start_time: record.status.toLowerCase() === "absent" ? null : record.startTime,
+        end_time: record.status.toLowerCase() === "absent" ? null : record.endTime,
+        overtime: record.status.toLowerCase() === "absent" ? null : record.overtimeHours,
+        note: record.notes === "" ? null : record.notes,
+        updated_at: now
+      }))
+    };
+    
+    const response = await fetch("https://n8n.moh9v9.com/webhook/google-proxy", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updatePayload),
+    });
 
-  if (!response.ok) {
-    throw new Error(`Failed to save attendance: ${response.status}`);
+    if (!response.ok) {
+      throw new Error(`Failed to update attendance: ${response.status}`);
+    }
   }
+  
+  // Process add operations if there are new records
+  if (newRecords.length > 0) {
+    const addPayload = {
+      entity: "attendance",
+      operation: "add",
+      data: newRecords.map(record => ({
+        employee_id: record.employee_id,
+        fullName: record.fullName,
+        date: record.date,
+        status: record.status.toLowerCase(),
+        start_time: record.status.toLowerCase() === "absent" ? null : record.startTime,
+        end_time: record.status.toLowerCase() === "absent" ? null : record.endTime,
+        overtime: record.status.toLowerCase() === "absent" ? null : record.overtimeHours,
+        note: record.notes === "" ? null : record.notes,
+        created_at: now,
+        updated_at: now
+      }))
+    };
+    
+    const response = await fetch("https://n8n.moh9v9.com/webhook/google-proxy", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(addPayload),
+    });
 
-  return response.json();
+    if (!response.ok) {
+      throw new Error(`Failed to add attendance: ${response.status}`);
+    }
+  }
+  
+  return { success: true };
 };

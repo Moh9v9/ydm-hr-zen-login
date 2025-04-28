@@ -148,7 +148,9 @@ export function useAttendance(selectedDate: Date, filters: Filters) {
     const recordsToUpdate = attendanceData
       .filter(record => modifiedRows.has(record.employee_id))
       .map(record => ({
+        attendance_id: record.attendance_id || undefined,
         employee_id: record.employee_id,
+        fullName: record.fullName,
         date: record.date,
         status: record.status,
         startTime: record.startTime,

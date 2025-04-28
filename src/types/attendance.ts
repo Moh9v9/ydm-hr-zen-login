@@ -16,6 +16,7 @@ export interface AttendanceRecord {
   overtimeHours: number | null;
   notes: string | null;
   date: string;
+  attendance_id?: string;
 }
 
 export interface RawAttendanceRecord {
