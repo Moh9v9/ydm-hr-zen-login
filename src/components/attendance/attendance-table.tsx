@@ -55,6 +55,13 @@ export function AttendanceTable({
     updateAttendanceField(employeeId, "notes", value || null);
   };
 
+  const handleDeleteRecord = async (employeeId: string, attendanceId?: string) => {
+    console.log("Attempting to delete record:", employeeId, attendanceId);
+    if (markRecordForDeletion && attendanceId) {
+      await markRecordForDeletion(employeeId, attendanceId);
+    }
+  };
+
   if (isLoading) {
     return <AttendanceTableSkeleton />;
   }
@@ -74,7 +81,7 @@ export function AttendanceTable({
             onTimeChange={handleTimeChange}
             onOvertimeChange={handleOvertimeChange}
             onNotesChange={handleNotesChange}
-            onDeleteRecord={markRecordForDeletion}
+            onDeleteRecord={handleDeleteRecord}
             isModified={modifiedRows.has(record.employee_id)}
           />
         ))}
@@ -107,7 +114,7 @@ export function AttendanceTable({
                   onTimeChange={handleTimeChange}
                   onOvertimeChange={handleOvertimeChange}
                   onNotesChange={handleNotesChange}
-                  onDeleteRecord={markRecordForDeletion}
+                  onDeleteRecord={handleDeleteRecord}
                   isModified={modifiedRows.has(record.employee_id)}
                 />
               ))}

@@ -15,7 +15,7 @@ interface DesktopAttendanceRowProps {
   onTimeChange: (employeeId: string, field: string, value: string) => void;
   onOvertimeChange: (employeeId: string, value: string) => void;
   onNotesChange: (employeeId: string, value: string) => void;
-  onDeleteRecord?: (employeeId: string, attendanceId?: string) => void;
+  onDeleteRecord?: (employeeId: string, attendanceId?: string) => Promise<void>;
   isModified: boolean;
 }
 
@@ -43,6 +43,15 @@ export function DesktopAttendanceRow({
       }
     }
   };
+
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent event bubbling
+    console.log("Delete button clicked for:", record.fullName);
+    setIsConfirmDialogOpen(true);
+  };
+
+  // Check if record can be deleted
+  const canDelete = !!record.attendance_id && !record.markedForDeletion && !isDeleting;
 
   return (
     <TableRow
@@ -110,14 +119,19 @@ export function DesktopAttendanceRow({
           placeholder="Add notes"
         />
       </TableCell>
-      <TableCell>
+      <TableCell className="relative">
         <Button
           variant="ghost"
           size="sm"
-          className="p-1 h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-          onClick={() => setIsConfirmDialogOpen(true)}
-          disabled={!record.attendance_id || record.markedForDeletion || isDeleting}
-          title="Delete attendance record"
+          className={cn(
+            "p-1 h-8 w-8 text-muted-foreground",
+            canDelete ? "hover:text-destructive hover:bg-destructive/10" : "opacity-50 cursor-not-allowed",
+            "z-10 relative"
+          )}
+          onClick={handleDeleteClick}
+          disabled={!canDelete}
+          title={!record.attendance_id ? "No attendance record to delete" : "Delete attendance record"}
+          type="button" // Explicit type to prevent form submission
         >
           <Trash2 className="h-4 w-4" />
           <span className="sr-only">Delete</span>

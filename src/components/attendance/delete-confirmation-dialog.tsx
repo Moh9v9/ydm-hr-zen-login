@@ -26,6 +26,13 @@ export function DeleteConfirmationDialog({
   employeeName,
   isDeleting = false,
 }: DeleteConfirmationDialogProps) {
+  const handleConfirm = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent default behavior
+    e.stopPropagation(); // Prevent event bubbling
+    console.log("Confirm delete for:", employeeName);
+    onConfirm();
+  };
+
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
@@ -40,10 +47,7 @@ export function DeleteConfirmationDialog({
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
           <AlertDialogAction
-            onClick={(e) => {
-              e.preventDefault();
-              onConfirm();
-            }}
+            onClick={handleConfirm}
             className="bg-destructive hover:bg-destructive/90"
             disabled={isDeleting}
           >

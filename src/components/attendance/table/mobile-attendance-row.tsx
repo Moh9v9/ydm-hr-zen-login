@@ -18,7 +18,7 @@ interface MobileAttendanceRowProps {
   onTimeChange: (employeeId: string, field: string, value: string) => void;
   onOvertimeChange: (employeeId: string, value: string) => void;
   onNotesChange: (employeeId: string, value: string) => void;
-  onDeleteRecord?: (employeeId: string, attendanceId?: string) => void;
+  onDeleteRecord?: (employeeId: string, attendanceId?: string) => Promise<void>;
   isModified: boolean;
 }
 
@@ -47,6 +47,16 @@ export function MobileAttendanceRow({
       }
     }
   };
+
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent default behavior
+    e.stopPropagation(); // Prevent event bubbling
+    console.log("Mobile delete button clicked for:", record.fullName);
+    setIsConfirmDialogOpen(true);
+  };
+
+  // Check if record can be deleted
+  const canDelete = !!record.attendance_id && !record.markedForDeletion;
 
   return (
     <Collapsible
@@ -156,9 +166,13 @@ export function MobileAttendanceRow({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="flex w-full justify-center items-center gap-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 border"
-                  onClick={() => setIsConfirmDialogOpen(true)}
+                  className={cn(
+                    "flex w-full justify-center items-center gap-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 border",
+                    "relative z-10"
+                  )}
+                  onClick={handleDeleteClick}
                   disabled={record.markedForDeletion || isDeleting}
+                  type="button"
                 >
                   <Trash2 className="h-4 w-4" />
                   <span>{isDeleting ? "Deleting..." : "Delete Record"}</span>

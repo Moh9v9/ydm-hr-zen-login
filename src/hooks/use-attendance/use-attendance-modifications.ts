@@ -1,6 +1,6 @@
 
 import { useState, useCallback } from "react";
-import { AttendanceRecord, BulkUpdateData, Filters } from "@/types/attendance";
+import { AttendanceRecord, BulkUpdateData } from "@/types/attendance";
 
 export function useAttendanceModifications(
   attendanceData: AttendanceRecord[],
@@ -44,12 +44,18 @@ export function useAttendanceModifications(
   
   // Mark a record for deletion
   const markRecordForDeletion = useCallback(async (employeeId: string, attendanceId?: string): Promise<void> => {
-    if (!attendanceId) return;
+    console.log("Marking record for deletion:", employeeId, attendanceId);
+    if (!attendanceId) {
+      console.error("No attendance_id provided for deletion");
+      return;
+    }
     
     return new Promise<void>((resolve) => {
       setAttendanceData(prevData => {
         const newData = prevData.map(record => {
           if (record.employee_id === employeeId && record.attendance_id === attendanceId) {
+            console.log("Found record to delete:", record.fullName);
+            
             setModifiedRows(prev => {
               const next = new Set(prev);
               next.add(employeeId);
@@ -72,7 +78,7 @@ export function useAttendanceModifications(
         
         setTimeout(() => {
           resolve();
-        }, 500); // Small delay to show the deleting state
+        }, 300); // Small delay to show the deleting state
         
         return newData;
       });
