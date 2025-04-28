@@ -7,7 +7,6 @@ import { format } from "date-fns";
 import { toast } from "sonner";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { 
-  Calendar, 
   CalendarIcon, 
   Check, 
   ChevronLeft, 
@@ -22,7 +21,6 @@ import {
   MapPin, 
   ToggleRight, 
   CreditCard, 
-  Calendar as CalendarIcon2, 
   Asterisk 
 } from "lucide-react";
 
@@ -51,6 +49,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 
