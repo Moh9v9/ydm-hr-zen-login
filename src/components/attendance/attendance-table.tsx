@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { AlertTriangle, Check, X } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -112,13 +113,13 @@ export function AttendanceTable({
                           onCheckedChange={() => handleToggleStatus(record.employee_id, record.status, record.isActive)}
                           disabled={!record.isActive}
                           className={cn(
-                            record.status === "Present" ? "bg-green-500" : "bg-red-500",
-                            "data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-red-500"
+                            "data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-red-500",
+                            !record.isActive && "opacity-50"
                           )}
                         />
                         <span className={cn(
                           "font-medium",
-                          record.status === "Present" ? "text-green-600" : "text-red-500"
+                          record.status === "Present" ? "text-green-600" : "text-red-600"
                         )}>
                           {record.status}
                         </span>
