@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
@@ -76,6 +75,14 @@ export function AttendanceFilters({
     setSelectedDate(new Date());
   };
 
+  // Convert empty string filters to "all" for display but keep state as empty string
+  const displayFilters = {
+    project: filters.project || "all",
+    location: filters.location || "all",
+    paymentType: filters.paymentType || "all",
+    sponsorship: filters.sponsorship || "all"
+  };
+
   return (
     <div className="bg-card rounded-lg border shadow-sm p-4">
       <div className="flex flex-col gap-4">
@@ -84,16 +91,16 @@ export function AttendanceFilters({
           <div className="space-y-1">
             <label className="text-xs text-muted-foreground">Project</label>
             <Select
-              value={filters.project}
+              value={displayFilters.project}
               onValueChange={(value) =>
-                setFilters({ ...filters, project: value })
+                setFilters({ ...filters, project: value === "all" ? "" : value })
               }
             >
               <SelectTrigger>
                 <SelectValue placeholder="All Projects" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Projects</SelectItem>
+                <SelectItem value="all">All Projects</SelectItem>
                 {projects.map((project) => (
                   <SelectItem key={project} value={project}>
                     {project}
@@ -106,16 +113,16 @@ export function AttendanceFilters({
           <div className="space-y-1">
             <label className="text-xs text-muted-foreground">Location</label>
             <Select
-              value={filters.location}
+              value={displayFilters.location}
               onValueChange={(value) =>
-                setFilters({ ...filters, location: value })
+                setFilters({ ...filters, location: value === "all" ? "" : value })
               }
             >
               <SelectTrigger>
                 <SelectValue placeholder="All Locations" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Locations</SelectItem>
+                <SelectItem value="all">All Locations</SelectItem>
                 {locations.map((location) => (
                   <SelectItem key={location} value={location}>
                     {location}
@@ -128,16 +135,16 @@ export function AttendanceFilters({
           <div className="space-y-1">
             <label className="text-xs text-muted-foreground">Payment Type</label>
             <Select
-              value={filters.paymentType}
+              value={displayFilters.paymentType}
               onValueChange={(value) =>
-                setFilters({ ...filters, paymentType: value })
+                setFilters({ ...filters, paymentType: value === "all" ? "" : value })
               }
             >
               <SelectTrigger>
                 <SelectValue placeholder="All Payment Types" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Payment Types</SelectItem>
+                <SelectItem value="all">All Payment Types</SelectItem>
                 {paymentTypes.map((type) => (
                   <SelectItem key={type} value={type}>
                     {type}
@@ -150,16 +157,16 @@ export function AttendanceFilters({
           <div className="space-y-1">
             <label className="text-xs text-muted-foreground">Sponsorship</label>
             <Select
-              value={filters.sponsorship}
+              value={displayFilters.sponsorship}
               onValueChange={(value) =>
-                setFilters({ ...filters, sponsorship: value })
+                setFilters({ ...filters, sponsorship: value === "all" ? "" : value })
               }
             >
               <SelectTrigger>
                 <SelectValue placeholder="All Sponsorships" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Sponsorships</SelectItem>
+                <SelectItem value="all">All Sponsorships</SelectItem>
                 {sponsorships.map((sponsorship) => (
                   <SelectItem key={sponsorship} value={sponsorship}>
                     {sponsorship}
