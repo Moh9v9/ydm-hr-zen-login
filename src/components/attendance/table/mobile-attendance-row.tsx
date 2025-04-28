@@ -33,12 +33,18 @@ export function MobileAttendanceRow({
 }: MobileAttendanceRowProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const isPresent = record.status.toLowerCase() === "present";
   
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (onDeleteRecord && record.attendance_id) {
-      onDeleteRecord(record.employee_id, record.attendance_id);
-      setIsConfirmDialogOpen(false);
+      setIsDeleting(true);
+      try {
+        await onDeleteRecord(record.employee_id, record.attendance_id);
+      } finally {
+        setIsDeleting(false);
+        setIsConfirmDialogOpen(false);
+      }
     }
   };
 
@@ -152,10 +158,10 @@ export function MobileAttendanceRow({
                   size="sm"
                   className="flex w-full justify-center items-center gap-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 border"
                   onClick={() => setIsConfirmDialogOpen(true)}
-                  disabled={record.markedForDeletion}
+                  disabled={record.markedForDeletion || isDeleting}
                 >
                   <Trash2 className="h-4 w-4" />
-                  <span>Delete Record</span>
+                  <span>{isDeleting ? "Deleting..." : "Delete Record"}</span>
                 </Button>
               </div>
             )}
@@ -168,6 +174,7 @@ export function MobileAttendanceRow({
         onOpenChange={setIsConfirmDialogOpen}
         onConfirm={handleDelete}
         employeeName={record.fullName}
+        isDeleting={isDeleting}
       />
     </Collapsible>
   );

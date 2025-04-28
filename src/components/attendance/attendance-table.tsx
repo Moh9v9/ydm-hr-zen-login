@@ -12,7 +12,7 @@ import { AttendanceTableSkeleton } from "./table/attendance-table-skeleton";
 interface AttendanceTableProps {
   attendanceData: AttendanceRecord[];
   updateAttendanceField: (employeeId: string, field: string, value: any) => void;
-  markRecordForDeletion?: (employeeId: string, attendanceId?: string) => void;
+  markRecordForDeletion?: (employeeId: string, attendanceId?: string) => Promise<void>;
   isLoading: boolean;
   modifiedRows: Set<string>;
 }

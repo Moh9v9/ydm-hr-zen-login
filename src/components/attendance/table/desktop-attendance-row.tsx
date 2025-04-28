@@ -30,11 +30,17 @@ export function DesktopAttendanceRow({
 }: DesktopAttendanceRowProps) {
   const isDisabled = record.status.toLowerCase() !== "present" || !record.isActive;
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (onDeleteRecord && record.attendance_id) {
-      onDeleteRecord(record.employee_id, record.attendance_id);
-      setIsConfirmDialogOpen(false);
+      setIsDeleting(true);
+      try {
+        await onDeleteRecord(record.employee_id, record.attendance_id);
+      } finally {
+        setIsDeleting(false);
+        setIsConfirmDialogOpen(false);
+      }
     }
   };
 
@@ -110,7 +116,7 @@ export function DesktopAttendanceRow({
           size="sm"
           className="p-1 h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
           onClick={() => setIsConfirmDialogOpen(true)}
-          disabled={!record.attendance_id || record.markedForDeletion}
+          disabled={!record.attendance_id || record.markedForDeletion || isDeleting}
           title="Delete attendance record"
         >
           <Trash2 className="h-4 w-4" />
@@ -122,6 +128,7 @@ export function DesktopAttendanceRow({
           onOpenChange={setIsConfirmDialogOpen}
           onConfirm={handleDelete}
           employeeName={record.fullName}
+          isDeleting={isDeleting}
         />
       </TableCell>
     </TableRow>

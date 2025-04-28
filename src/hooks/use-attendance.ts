@@ -102,30 +102,38 @@ export function useAttendance(selectedDate: Date, filters: Filters) {
   };
   
   // Mark a record for deletion
-  const markRecordForDeletion = (employeeId: string, attendanceId?: string) => {
+  const markRecordForDeletion = async (employeeId: string, attendanceId?: string): Promise<void> => {
     if (!attendanceId) return;
     
-    setAttendanceData(prevData => {
-      return prevData.map(record => {
-        if (record.employee_id === employeeId && record.attendance_id === attendanceId) {
-          setModifiedRows(prev => {
-            const next = new Set(prev);
-            next.add(employeeId);
-            return next;
-          });
-          
-          setDeletedRecords(prev => {
-            const next = new Set(prev);
-            next.add(attendanceId);
-            return next;
-          });
-          
-          return {
-            ...record,
-            markedForDeletion: true
-          };
-        }
-        return record;
+    return new Promise<void>((resolve) => {
+      setAttendanceData(prevData => {
+        const newData = prevData.map(record => {
+          if (record.employee_id === employeeId && record.attendance_id === attendanceId) {
+            setModifiedRows(prev => {
+              const next = new Set(prev);
+              next.add(employeeId);
+              return next;
+            });
+            
+            setDeletedRecords(prev => {
+              const next = new Set(prev);
+              next.add(attendanceId);
+              return next;
+            });
+            
+            return {
+              ...record,
+              markedForDeletion: true
+            };
+          }
+          return record;
+        });
+        
+        setTimeout(() => {
+          resolve();
+        }, 500); // Small delay to show the deleting state
+        
+        return newData;
       });
     });
   };
