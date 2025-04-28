@@ -18,6 +18,12 @@ export const formSchema = z.object({
   paymentType: z.enum(["Monthly", "Daily", "Hourly"]).default("Monthly"),
   rateOfPayment: z.string().optional(),
   attendanceRequired: z.boolean().default(false),
+  overtimeEligible: z.boolean().default(false),
+  lunchAllowance: z.boolean().default(false),
+  lunchAllowanceAmount: z.string().optional(),
+  jumaAllowance: z.boolean().default(false),
+  jumaAllowanceAmount: z.string().optional(),
+  additionalMonthly: z.string().optional(),
   comments: z.string().optional(),
 });
 

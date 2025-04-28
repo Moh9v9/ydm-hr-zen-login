@@ -10,6 +10,7 @@ import { PersonalInfoSection } from "./form-sections/PersonalInfoSection";
 import { LegalInfoSection } from "./form-sections/LegalInfoSection";
 import { WorkInfoSection } from "./form-sections/WorkInfoSection";
 import { CompensationSection } from "./form-sections/CompensationSection";
+import { AllowancesSection } from "./form-sections/AllowancesSection";
 import { PermissionsSection } from "./form-sections/PermissionsSection";
 import { useCreateEmployee } from "@/hooks/use-create-employee";
 
@@ -40,6 +41,12 @@ export function CreateEmployeeForm({ onClose }: CreateEmployeeFormProps) {
       paymentType: "Monthly",
       rateOfPayment: "",
       attendanceRequired: false,
+      overtimeEligible: false,
+      lunchAllowance: false,
+      lunchAllowanceAmount: "",
+      jumaAllowance: false,
+      jumaAllowanceAmount: "",
+      additionalMonthly: "",
       comments: "",
     },
   });
@@ -73,6 +80,7 @@ export function CreateEmployeeForm({ onClose }: CreateEmployeeFormProps) {
           <LegalInfoSection form={form} />
           <WorkInfoSection form={form} />
           <CompensationSection form={form} />
+          <AllowancesSection form={form} />
           <PermissionsSection form={form} />
 
           <div className="flex justify-end space-x-4 pt-4">
