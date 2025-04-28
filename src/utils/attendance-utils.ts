@@ -1,5 +1,6 @@
 import { Employee } from "@/hooks/use-employees";
 import { AttendanceRecord, RawAttendanceRecord, Filters } from "@/types/attendance";
+import { isFriday } from "date-fns";
 
 export const combineEmployeeAndAttendanceData = (
   employees: Employee[],
@@ -7,10 +8,16 @@ export const combineEmployeeAndAttendanceData = (
   date: string
 ): AttendanceRecord[] => {
   const combinedData: AttendanceRecord[] = [];
+  const isSelectedDateFriday = isFriday(new Date(date));
   
-  // First, process all active employees
+  // Filter function for employees based on attendance requirement
+  const shouldShowEmployee = (emp: Employee) => {
+    return isSelectedDateFriday || emp.attendanceRequired !== false;
+  };
+  
+  // First, process all active employees that meet the attendance requirement criteria
   employees
-    .filter(emp => emp.status?.toLowerCase() === "active")
+    .filter(emp => emp.status?.toLowerCase() === "active" && shouldShowEmployee(emp))
     .forEach(emp => {
       const attendance = attendanceRecords.find(a => a.employee_id === emp.employee_id);
       
@@ -34,9 +41,12 @@ export const combineEmployeeAndAttendanceData = (
       });
     });
   
-  // Then, add inactive employees who have attendance records
+  // Then, add inactive employees who have attendance records AND meet the attendance requirement criteria
   employees
-    .filter(emp => emp.status?.toLowerCase() !== "active")
+    .filter(emp => 
+      emp.status?.toLowerCase() !== "active" && 
+      shouldShowEmployee(emp)
+    )
     .forEach(emp => {
       const attendance = attendanceRecords.find(a => a.employee_id === emp.employee_id);
       
@@ -62,29 +72,31 @@ export const combineEmployeeAndAttendanceData = (
       }
     });
   
-  // Finally, add any attendance records for unknown employees
-  attendanceRecords
-    .filter(record => !employees.some(emp => emp.employee_id === record.employee_id))
-    .forEach(record => {
-      combinedData.push({
-        employee_id: record.employee_id,
-        fullName: "Unknown Employee",
-        id_iqama_national: "",
-        jobTitle: "",
-        project: "",
-        location: "",
-        status: record.status,
-        isActive: false,
-        paymentType: "Monthly",
-        sponsorship: "",
-        hasAttendanceRecord: true,
-        startTime: record.start_time || null,
-        endTime: record.end_time || null,
-        overtimeHours: record.overtime !== undefined ? record.overtime : null,
-        notes: record.note || null,
-        date,
+  // Finally, add any attendance records for unknown employees (only on Fridays or if they have attendance_required)
+  if (isSelectedDateFriday) {
+    attendanceRecords
+      .filter(record => !employees.some(emp => emp.employee_id === record.employee_id))
+      .forEach(record => {
+        combinedData.push({
+          employee_id: record.employee_id,
+          fullName: "Unknown Employee",
+          id_iqama_national: "",
+          jobTitle: "",
+          project: "",
+          location: "",
+          status: record.status,
+          isActive: false,
+          paymentType: "Monthly",
+          sponsorship: "",
+          hasAttendanceRecord: true,
+          startTime: record.start_time || null,
+          endTime: record.end_time || null,
+          overtimeHours: record.overtime !== undefined ? record.overtime : null,
+          notes: record.note || null,
+          date,
+        });
       });
-    });
+  }
 
   return combinedData;
 };
