@@ -1,4 +1,3 @@
-
 import { useState, useMemo, useEffect } from "react";
 import { format } from "date-fns";
 import { Calendar, Filter, AlertTriangle, Check, Save } from "lucide-react";
@@ -70,10 +69,18 @@ export default function Attendance() {
   return (
     <div className="flex flex-col gap-6 p-6">
       <div className="flex flex-col gap-2">
-        <h2 className="text-3xl font-bold">Attendance</h2>
-        <p className="text-muted-foreground">
-          Manage daily attendance for employees
-        </p>
+        <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-3xl font-bold">Attendance</h2>
+            <p className="text-muted-foreground">
+              Manage daily attendance for employees
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Calendar className="h-5 w-5 text-muted-foreground" />
+            <span className="font-medium">{formattedDate}</span>
+          </div>
+        </div>
       </div>
 
       <div className="grid gap-6 md:grid-cols-3">
