@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -49,7 +48,7 @@ export function LoginForm() {
     setIsLoading(true);
     
     try {
-      const response = await fetch("/webhook/google-proxy", {
+      const response = await fetch("https://n8n.moh9v9.com/webhook/google-proxy", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -62,30 +61,36 @@ export function LoginForm() {
         }),
       });
       
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
       const result = await response.json();
       
-      if (response.ok && !result.error) {
+      if (result.error) {
+        setLoginError(result.error);
+        console.error("Login error:", result.error);
+      } else {
         // Successful login
         if (data.rememberMe) {
-          // Store auth token or session data in localStorage
           localStorage.setItem("ydm-user-session", JSON.stringify({
             email: data.email,
             timestamp: new Date().toISOString(),
+            token: result.token // Store token if provided by the API
           }));
         }
+        
         toast({
           title: "Login successful",
-          description: "Redirecting to dashboard...",
+          description: "Welcome back!",
         });
+        
         // Redirect to dashboard
         navigate("/dashboard");
-      } else {
-        // Failed login
-        setLoginError(result.error || "Invalid login credentials. Please try again.");
       }
     } catch (error) {
-      setLoginError("Login failed. Please check your connection and try again.");
       console.error("Login error:", error);
+      setLoginError("Login failed. Please check your connection and try again.");
     } finally {
       setIsLoading(false);
     }
