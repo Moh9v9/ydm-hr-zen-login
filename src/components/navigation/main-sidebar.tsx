@@ -4,6 +4,7 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, Sid
 import { Button } from "@/components/ui/button";
 import { LayoutDashboard, Users, CalendarDays, Wallet, FileText, User, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
+
 const navigationItems = [{
   title: "Dashboard",
   path: "/dashboard",
@@ -29,6 +30,7 @@ const navigationItems = [{
   path: "/users",
   icon: User
 }];
+
 export function MainSidebar() {
   const location = useLocation();
   const {
@@ -42,8 +44,6 @@ export function MainSidebar() {
   const handleNavigation = () => {
     if (isMobile) {
       setOpenMobile(false);
-    } else {
-      setOpen(false);
     }
   };
 
@@ -64,7 +64,13 @@ export function MainSidebar() {
         </SidebarTrigger>
       </Button>
 
-      <Sidebar className="border-r bg-card">
+      <Sidebar 
+        className="border-r bg-card"
+        style={{ 
+          "--sidebar-width": "240px",
+          "--sidebar-width-icon": "64px"
+        } as React.CSSProperties}
+      >
         <SidebarContent className="p-2">
           <SidebarMenu>
             {navigationItems.map(item => (
@@ -78,22 +84,18 @@ export function MainSidebar() {
                   <Link 
                     to={item.path} 
                     className={cn(
-                      "w-full whitespace-nowrap", 
+                      "w-full whitespace-nowrap flex items-center gap-3", 
                       location.pathname === item.path && "bg-primary text-primary-foreground"
                     )}
                   >
-                    <item.icon className="shrink-0" />
-                    <span>{item.title}</span>
+                    <item.icon className="h-5 w-5 shrink-0" />
+                    <span className="truncate">{item.title}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
           </SidebarMenu>
         </SidebarContent>
-
-        <SidebarFooter className="p-4">
-          
-        </SidebarFooter>
       </Sidebar>
     </>
   );
