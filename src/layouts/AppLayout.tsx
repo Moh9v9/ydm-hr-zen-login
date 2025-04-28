@@ -1,3 +1,4 @@
+
 import { SidebarProvider } from "@/components/ui/sidebar"
 import { MainSidebar } from "@/components/navigation/main-sidebar"
 import { Header } from "@/components/navigation/header"
@@ -6,6 +7,7 @@ import { useEffect, useState } from "react"
 import { useAuth } from "@/contexts/AuthContext"
 import { LoadingScreen } from "@/components/LoadingScreen"
 import { AlertCircle } from "lucide-react"
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable"
 
 export interface AppLayoutProps {
   children: React.ReactNode
@@ -71,11 +73,18 @@ export function AppLayout({ children }: AppLayoutProps) {
   return (
     <SidebarProvider defaultOpen={false}>
       <div className="min-h-screen flex w-full">
-        <MainSidebar />
-        <main className="flex-1 h-screen overflow-auto">
-          <Header />
-          {children}
-        </main>
+        <ResizablePanelGroup direction="horizontal">
+          <ResizablePanel defaultSize={20} minSize={15} maxSize={30}>
+            <MainSidebar />
+          </ResizablePanel>
+          <ResizableHandle withHandle />
+          <ResizablePanel defaultSize={80}>
+            <main className="flex-1 h-screen overflow-auto">
+              <Header />
+              {children}
+            </main>
+          </ResizablePanel>
+        </ResizablePanelGroup>
       </div>
     </SidebarProvider>
   );

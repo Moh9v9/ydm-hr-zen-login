@@ -47,38 +47,36 @@ export function MainSidebar() {
       setOpen(false);
     }
   };
-  return <>
-      <Button variant="ghost" size="icon" className={cn("fixed top-4 z-40 lg:block transition-all duration-300", state === "expanded" ? "left-[calc(var(--sidebar-width)_-_3rem)]" : "left-4")} asChild>
-        <SidebarTrigger>
-          <Menu className="h-6 w-6" />
-          <span className="sr-only">Toggle Menu</span>
-        </SidebarTrigger>
-      </Button>
 
-      <Sidebar className="border-r bg-card">
+  return (
+    <div className="h-screen">
+      <Sidebar className="border-r bg-card h-full">
         <SidebarHeader className="p-4">
-          <div className="flex items-center gap-2 px-2 min-w-max">
+          <div className="flex items-center gap-2 px-2">
             <img src="https://i.ibb.co/DPfXmyDz/YDM-logo2-2.png" alt="YDM HR Logo" className="h-8 w-8" />
-            <span className="font-semibold text-lg text-foreground whitespace-nowrap">YDM HR</span>
+            <span className="font-semibold text-lg text-foreground">YDM HR</span>
           </div>
         </SidebarHeader>
 
         <SidebarContent className="p-2">
           <SidebarMenu>
-            {navigationItems.map(item => <SidebarMenuItem key={item.path}>
+            {navigationItems.map(item => (
+              <SidebarMenuItem key={item.path}>
                 <SidebarMenuButton asChild isActive={location.pathname === item.path} tooltip={item.title} onClick={handleNavigation}>
-                  <Link to={item.path} className={cn("w-full whitespace-nowrap", location.pathname === item.path && "bg-primary text-primary-foreground")}>
+                  <Link to={item.path} className={cn("w-full", location.pathname === item.path && "bg-primary text-primary-foreground")}>
                     <item.icon className="shrink-0" />
                     <span>{item.title}</span>
                   </Link>
                 </SidebarMenuButton>
-              </SidebarMenuItem>)}
+              </SidebarMenuItem>
+            ))}
           </SidebarMenu>
         </SidebarContent>
 
         <SidebarFooter className="p-4">
-          
+          {/* Footer content if needed */}
         </SidebarFooter>
       </Sidebar>
-    </>;
+    </div>
+  );
 }
