@@ -46,7 +46,9 @@ export function EmployeeActions({ employee }: EmployeeActionsProps) {
         body: JSON.stringify({
           entity: "employees",
           operation: "delete",
-          id: employee.employee_id,
+          data: { 
+            employee_id: employee.employee_id 
+          }
         }),
       });
 
