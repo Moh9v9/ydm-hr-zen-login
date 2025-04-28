@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { AlertTriangle, Check, X } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -71,7 +70,6 @@ export function AttendanceTable({
             <TableHeader className="sticky top-0 bg-card z-10">
               <TableRow>
                 <TableHead className="w-[250px]">Employee</TableHead>
-                <TableHead className="w-[150px]">Status</TableHead>
                 <TableHead className="w-[120px]">Start Time</TableHead>
                 <TableHead className="w-[120px]">End Time</TableHead>
                 <TableHead className="w-[120px]">Overtime (hrs)</TableHead>
@@ -106,41 +104,12 @@ export function AttendanceTable({
                     </div>
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-2">
-                        <Switch 
-                          checked={record.status === "Present"}
-                          onCheckedChange={() => handleToggleStatus(record.employee_id, record.status, record.isActive)}
-                          disabled={!record.isActive}
-                          className={cn(
-                            "h-5 w-9",
-                            !record.isActive && "opacity-50",
-                            record.status === "Present" 
-                              ? "!bg-[#22c55e] data-[state=checked]:!bg-[#22c55e]" 
-                              : "!bg-[#ef4444] data-[state=unchecked]:!bg-[#ef4444]"
-                          )}
-                        />
-                        <span className={cn(
-                          "font-medium text-sm",
-                          record.status === "Present" ? "text-[#22c55e]" : "text-[#ef4444]"
-                        )}>
-                          {record.status}
-                        </span>
-                      </div>
-                      {!record.hasAttendanceRecord && (
-                        <div className="flex items-center">
-                          <AlertTriangle className="h-4 w-4 text-yellow-500" />
-                        </div>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell>
                     <Input 
                       type="text" 
                       placeholder="-- : --" 
                       value={record.startTime || ""} 
                       onChange={e => handleTimeChange(record.employee_id, "startTime", e.target.value)}
-                      disabled={record.status !== "Present" || !record.isActive} 
+                      disabled={!record.isActive} 
                     />
                   </TableCell>
                   <TableCell>
@@ -149,7 +118,7 @@ export function AttendanceTable({
                       placeholder="-- : --" 
                       value={record.endTime || ""} 
                       onChange={e => handleTimeChange(record.employee_id, "endTime", e.target.value)}
-                      disabled={record.status !== "Present" || !record.isActive} 
+                      disabled={!record.isActive} 
                     />
                   </TableCell>
                   <TableCell>
@@ -159,14 +128,14 @@ export function AttendanceTable({
                       step="0.5" 
                       value={record.overtimeHours !== null ? record.overtimeHours : ""}
                       onChange={e => handleOvertimeChange(record.employee_id, e.target.value)}
-                      disabled={record.status !== "Present" || !record.isActive} 
+                      disabled={!record.isActive} 
                     />
                   </TableCell>
                   <TableCell>
                     <Textarea 
                       value={record.notes || ""} 
                       onChange={e => handleNotesChange(record.employee_id, e.target.value)}
-                      disabled={record.status !== "Present" || !record.isActive} 
+                      disabled={!record.isActive} 
                       className="min-h-[50px] max-h-[100px]" 
                       placeholder="Add notes" 
                     />
