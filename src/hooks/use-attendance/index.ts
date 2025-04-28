@@ -9,8 +9,7 @@ import {
 } from "@/types/attendance";
 import { 
   fetchAttendanceRecords, 
-  saveAttendanceRecords, 
-  deleteAttendanceRecords 
+  saveAttendanceRecords
 } from "@/services/attendance-service";
 import { combineEmployeeAndAttendanceData, filterAttendanceData } from "@/utils/attendance-utils";
 import { useAttendanceActions } from "./use-attendance-actions";
@@ -25,10 +24,8 @@ export function useAttendance(selectedDate: Date, filters: Filters) {
   const { data: employees, isLoading: isLoadingEmployees, error: employeesError } = useEmployees();
   
   const { 
-    modifiedRows, 
-    deletedRecords,
+    modifiedRows,
     updateAttendanceField, 
-    markRecordForDeletion,
     applyBulkUpdate
   } = useAttendanceModifications(attendanceData, setAttendanceData);
 
@@ -84,8 +81,7 @@ export function useAttendance(selectedDate: Date, filters: Filters) {
   
   const saveChanges = useAttendanceActions(
     modifiedRows, 
-    attendanceData, 
-    deletedRecords, 
+    attendanceData,
     selectedDate, 
     employees, 
     setOriginalData, 
@@ -95,18 +91,16 @@ export function useAttendance(selectedDate: Date, filters: Filters) {
   // Calculate summary statistics
   const totalEmployees = filteredAttendanceData.length;
   const totalPresent = filteredAttendanceData.filter(
-    record => record.status.toLowerCase() === "present" && !record.markedForDeletion
+    record => record.status.toLowerCase() === "present"
   ).length;
   const totalAbsent = totalEmployees - totalPresent;
   
   return {
     attendanceData: filteredAttendanceData,
     modifiedRows,
-    deletedRecords,
     isLoading,
     error,
     updateAttendanceField,
-    markRecordForDeletion,
     applyBulkUpdate,
     saveChanges,
     totalEmployees,

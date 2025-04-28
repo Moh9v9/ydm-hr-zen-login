@@ -4,13 +4,11 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { ChevronDown, ChevronUp, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { type AttendanceRecord } from "@/types/attendance";
 import { AttendanceStatus } from "./attendance-status";
 import { EmployeeInfo } from "./employee-info";
-import { DeleteConfirmationDialog } from "../delete-confirmation-dialog";
 
 interface MobileAttendanceRowProps {
   record: AttendanceRecord;
@@ -18,7 +16,6 @@ interface MobileAttendanceRowProps {
   onTimeChange: (employeeId: string, field: string, value: string) => void;
   onOvertimeChange: (employeeId: string, value: string) => void;
   onNotesChange: (employeeId: string, value: string) => void;
-  onDeleteRecord?: (employeeId: string, attendanceId?: string) => Promise<void>;
   isModified: boolean;
 }
 
@@ -28,36 +25,11 @@ export function MobileAttendanceRow({
   onTimeChange,
   onOvertimeChange,
   onNotesChange,
-  onDeleteRecord,
   isModified,
 }: MobileAttendanceRowProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
   const isPresent = record.status.toLowerCase() === "present";
   
-  const handleDelete = async () => {
-    if (onDeleteRecord && record.attendance_id) {
-      setIsDeleting(true);
-      try {
-        await onDeleteRecord(record.employee_id, record.attendance_id);
-      } finally {
-        setIsDeleting(false);
-        setIsConfirmDialogOpen(false);
-      }
-    }
-  };
-
-  const handleDeleteClick = (e: React.MouseEvent) => {
-    e.preventDefault(); // Prevent default behavior
-    e.stopPropagation(); // Prevent event bubbling
-    console.log("Mobile delete button clicked for:", record.fullName);
-    setIsConfirmDialogOpen(true);
-  };
-
-  // Check if record can be deleted
-  const canDelete = !!record.attendance_id && !record.markedForDeletion;
-
   return (
     <Collapsible
       open={isExpanded}
@@ -65,8 +37,7 @@ export function MobileAttendanceRow({
       className={cn(
         "border rounded-lg overflow-hidden transition-colors",
         isModified && "border-yellow-500 dark:border-yellow-600",
-        !record.isActive && "bg-gray-100 dark:bg-gray-800/50",
-        record.markedForDeletion && "opacity-50 border-red-300 dark:border-red-700 bg-red-50/30 dark:bg-red-900/10"
+        !record.isActive && "bg-gray-100 dark:bg-gray-800/50"
       )}
     >
       <div className="p-4">
@@ -84,14 +55,6 @@ export function MobileAttendanceRow({
                 className="ml-1 text-xs bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800"
               >
                 Modified
-              </Badge>
-            )}
-            {record.markedForDeletion && (
-              <Badge
-                variant="outline"
-                className="ml-1 text-xs bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 border-red-200 dark:border-red-800"
-              >
-                Deleted
               </Badge>
             )}
           </div>
@@ -119,7 +82,7 @@ export function MobileAttendanceRow({
                 placeholder="-- : --"
                 value={record.startTime || ""}
                 onChange={(e) => onTimeChange(record.employee_id, "startTime", e.target.value)}
-                disabled={!isPresent || !record.isActive || record.markedForDeletion}
+                disabled={!isPresent || !record.isActive}
                 className="w-full"
               />
             </div>
@@ -132,7 +95,7 @@ export function MobileAttendanceRow({
                 placeholder="-- : --"
                 value={record.endTime || ""}
                 onChange={(e) => onTimeChange(record.employee_id, "endTime", e.target.value)}
-                disabled={!isPresent || !record.isActive || record.markedForDeletion}
+                disabled={!isPresent || !record.isActive}
                 className="w-full"
               />
             </div>
@@ -146,7 +109,7 @@ export function MobileAttendanceRow({
                 step="0.5"
                 value={record.overtimeHours !== null ? record.overtimeHours : ""}
                 onChange={(e) => onOvertimeChange(record.employee_id, e.target.value)}
-                disabled={!isPresent || !record.isActive || record.markedForDeletion}
+                disabled={!isPresent || !record.isActive}
                 className="w-full"
               />
             </div>
@@ -155,41 +118,14 @@ export function MobileAttendanceRow({
               <Textarea
                 value={record.notes || ""}
                 onChange={(e) => onNotesChange(record.employee_id, e.target.value)}
-                disabled={!isPresent || !record.isActive || record.markedForDeletion}
+                disabled={!isPresent || !record.isActive}
                 className="min-h-[80px] max-h-[120px] w-full"
                 placeholder="Add notes"
               />
             </div>
-            
-            {record.attendance_id && (
-              <div className="pt-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className={cn(
-                    "flex w-full justify-center items-center gap-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 border",
-                    "relative z-10"
-                  )}
-                  onClick={handleDeleteClick}
-                  disabled={record.markedForDeletion || isDeleting}
-                  type="button"
-                >
-                  <Trash2 className="h-4 w-4" />
-                  <span>{isDeleting ? "Deleting..." : "Delete Record"}</span>
-                </Button>
-              </div>
-            )}
           </div>
         </div>
       </CollapsibleContent>
-      
-      <DeleteConfirmationDialog
-        open={isConfirmDialogOpen}
-        onOpenChange={setIsConfirmDialogOpen}
-        onConfirm={handleDelete}
-        employeeName={record.fullName}
-        isDeleting={isDeleting}
-      />
     </Collapsible>
   );
 }

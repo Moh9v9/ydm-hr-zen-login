@@ -5,15 +5,13 @@ import { Employee } from "../use-employees";
 import { AttendanceRecord } from "@/types/attendance";
 import { 
   saveAttendanceRecords, 
-  fetchAttendanceRecords, 
-  deleteAttendanceRecords 
+  fetchAttendanceRecords
 } from "@/services/attendance-service";
 import { combineEmployeeAndAttendanceData } from "@/utils/attendance-utils";
 
 export function useAttendanceActions(
   modifiedRows: Set<string>,
   attendanceData: AttendanceRecord[],
-  deletedRecords: Set<string>,
   selectedDate: Date,
   employees: Employee[] | undefined,
   setOriginalData: React.Dispatch<React.SetStateAction<AttendanceRecord[]>>,
@@ -23,9 +21,9 @@ export function useAttendanceActions(
   const saveChanges = useCallback(async () => {
     if (modifiedRows.size === 0) return;
     
-    // Records to update or add (not marked for deletion)
+    // Records to update or add
     const recordsToUpdate = attendanceData
-      .filter(record => modifiedRows.has(record.employee_id) && !record.markedForDeletion)
+      .filter(record => modifiedRows.has(record.employee_id))
       .map(record => ({
         attendance_id: record.attendance_id || undefined,
         employee_id: record.employee_id,
@@ -38,20 +36,10 @@ export function useAttendanceActions(
         notes: record.notes,
       }));
     
-    // Records to delete
-    const recordsToDelete = Array.from(deletedRecords).map(id => ({
-      attendance_id: id
-    }));
-    
     try {
       // Save updates and additions
       if (recordsToUpdate.length > 0) {
         await saveAttendanceRecords(recordsToUpdate);
-      }
-      
-      // Delete marked records
-      if (recordsToDelete.length > 0) {
-        await deleteAttendanceRecords(recordsToDelete);
       }
       
       // Refresh data after all operations are complete
@@ -83,7 +71,6 @@ export function useAttendanceActions(
   }, [
     modifiedRows, 
     attendanceData, 
-    deletedRecords, 
     selectedDate, 
     employees, 
     setOriginalData, 

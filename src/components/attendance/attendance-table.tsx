@@ -12,7 +12,6 @@ import { AttendanceTableSkeleton } from "./table/attendance-table-skeleton";
 interface AttendanceTableProps {
   attendanceData: AttendanceRecord[];
   updateAttendanceField: (employeeId: string, field: string, value: any) => void;
-  markRecordForDeletion?: (employeeId: string, attendanceId?: string) => Promise<void>;
   isLoading: boolean;
   modifiedRows: Set<string>;
 }
@@ -20,7 +19,6 @@ interface AttendanceTableProps {
 export function AttendanceTable({
   attendanceData,
   updateAttendanceField,
-  markRecordForDeletion,
   isLoading,
   modifiedRows,
 }: AttendanceTableProps) {
@@ -55,13 +53,6 @@ export function AttendanceTable({
     updateAttendanceField(employeeId, "notes", value || null);
   };
 
-  const handleDeleteRecord = async (employeeId: string, attendanceId?: string) => {
-    console.log("Attempting to delete record:", employeeId, attendanceId);
-    if (markRecordForDeletion && attendanceId) {
-      await markRecordForDeletion(employeeId, attendanceId);
-    }
-  };
-
   if (isLoading) {
     return <AttendanceTableSkeleton />;
   }
@@ -81,7 +72,6 @@ export function AttendanceTable({
             onTimeChange={handleTimeChange}
             onOvertimeChange={handleOvertimeChange}
             onNotesChange={handleNotesChange}
-            onDeleteRecord={handleDeleteRecord}
             isModified={modifiedRows.has(record.employee_id)}
           />
         ))}
@@ -102,7 +92,6 @@ export function AttendanceTable({
                 <TableHead className="w-[120px] bg-card">End Time</TableHead>
                 <TableHead className="w-[120px] bg-card">Overtime (hrs)</TableHead>
                 <TableHead className="w-[200px] bg-card">Notes</TableHead>
-                <TableHead className="w-[60px] bg-card">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -114,7 +103,6 @@ export function AttendanceTable({
                   onTimeChange={handleTimeChange}
                   onOvertimeChange={handleOvertimeChange}
                   onNotesChange={handleNotesChange}
-                  onDeleteRecord={handleDeleteRecord}
                   isModified={modifiedRows.has(record.employee_id)}
                 />
               ))}
