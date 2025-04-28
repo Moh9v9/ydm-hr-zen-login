@@ -151,19 +151,19 @@ export function AttendanceTable({
       </div>;
   }
 
-  // Update the desktop view
+  // Update the desktop view with fixed header
   return <div className="rounded-md border shadow-sm overflow-hidden bg-card">
       <ScrollArea className="h-[calc(100vh-26rem)]">
-        <div className="min-w-[900px]">
+        <div className="min-w-[900px] relative">
           <Table>
-            <TableHeader className="sticky top-0 bg-card z-10">
+            <TableHeader className="sticky top-0 bg-card z-10 after:absolute after:left-0 after:right-0 after:bottom-0 after:h-px after:bg-border">
               <TableRow>
-                <TableHead className="w-[250px]">Employee</TableHead>
-                <TableHead className="w-[150px]">Status</TableHead>
-                <TableHead className="w-[120px]">Start Time</TableHead>
-                <TableHead className="w-[120px]">End Time</TableHead>
-                <TableHead className="w-[120px]">Overtime (hrs)</TableHead>
-                <TableHead className="w-[200px]">Notes</TableHead>
+                <TableHead className="w-[250px] bg-card">Employee</TableHead>
+                <TableHead className="w-[150px] bg-card">Status</TableHead>
+                <TableHead className="w-[120px] bg-card">Start Time</TableHead>
+                <TableHead className="w-[120px] bg-card">End Time</TableHead>
+                <TableHead className="w-[120px] bg-card">Overtime (hrs)</TableHead>
+                <TableHead className="w-[200px] bg-card">Notes</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
