@@ -32,8 +32,8 @@ export function EmployeeTable({ employees, isLoading }: EmployeeTableProps) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>ID/Iqama</TableHead>
             <TableHead>Name</TableHead>
+            <TableHead>ID/Iqama</TableHead>
             <TableHead>Job Title</TableHead>
             <TableHead>Project</TableHead>
             <TableHead>Location</TableHead>
@@ -45,8 +45,8 @@ export function EmployeeTable({ employees, isLoading }: EmployeeTableProps) {
         <TableBody>
           {employees.map((employee) => (
             <TableRow key={employee.employee_id}>
-              <TableCell className="font-medium">{employee.employee_id}</TableCell>
               <TableCell>{employee.fullName}</TableCell>
+              <TableCell className="font-medium">{employee.id_iqama_national}</TableCell>
               <TableCell>{employee.jobTitle}</TableCell>
               <TableCell>{employee.project}</TableCell>
               <TableCell>{employee.location}</TableCell>
