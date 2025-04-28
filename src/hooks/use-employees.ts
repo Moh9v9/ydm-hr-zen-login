@@ -10,6 +10,7 @@ export interface Employee {
   location: string;
   sponsorship: string;
   status: string;
+  paymentType: string; // Added the paymentType property to fix TypeScript errors
 }
 
 const fetchEmployees = async (): Promise<Employee[]> => {
