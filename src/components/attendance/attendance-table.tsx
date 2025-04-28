@@ -114,6 +114,20 @@ export function AttendanceTable({
                   <div>
                     <div className="font-medium flex items-center gap-2">
                       {record.fullName}
+                      {!record.hasAttendanceRecord && (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="inline-flex">
+                                <AlertTriangle className="h-4 w-4 text-[#EF4444]" />
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>No attendance record for today</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
                       {!record.isActive && (
                         <Badge variant="outline" className="ml-1 text-xs bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 border-red-200 dark:border-red-800">
                           Inactive
@@ -244,6 +258,20 @@ export function AttendanceTable({
                       <div className="flex flex-col">
                         <div className="font-medium flex items-center gap-2">
                           {record.fullName}
+                          {!record.hasAttendanceRecord && (
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div className="inline-flex">
+                                    <AlertTriangle className="h-4 w-4 text-[#EF4444]" />
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>No attendance record for today</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          )}
                           {!record.isActive && (
                             <Badge 
                               variant="outline" 
