@@ -11,6 +11,7 @@ import { LoadingScreen } from "@/components/LoadingScreen"
 import Login from "./pages/Login"
 import Dashboard from "./pages/Dashboard"
 import Employees from "./pages/Employees"
+import Attendance from "./pages/Attendance"
 import ForgotPassword from "./pages/ForgotPassword"
 import NotFound from "./pages/NotFound"
 
@@ -32,7 +33,7 @@ const App = () => (
               {/* Protected Routes - All wrapped in AppLayout */}
               <Route path="/dashboard" element={<AppLayout><Dashboard /></AppLayout>} />
               <Route path="/employees" element={<AppLayout><Employees /></AppLayout>} />
-              <Route path="/attendance" element={<AppLayout><Navigate to="/dashboard" replace /></AppLayout>} />
+              <Route path="/attendance" element={<AppLayout><Attendance /></AppLayout>} />
               <Route path="/payroll" element={<AppLayout><Navigate to="/dashboard" replace /></AppLayout>} />
               <Route path="/leaves" element={<AppLayout><Navigate to="/dashboard" replace /></AppLayout>} />
               <Route path="/users" element={<AppLayout><Navigate to="/dashboard" replace /></AppLayout>} />
