@@ -113,7 +113,9 @@ export function AttendanceTable({
                           onCheckedChange={() => handleToggleStatus(record.employee_id, record.status, record.isActive)}
                           disabled={!record.isActive}
                           className={cn(
-                            "data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-red-500",
+                            record.status === "Present" 
+                              ? "bg-green-500 data-[state=checked]:bg-green-500" 
+                              : "bg-red-500 data-[state=unchecked]:bg-red-500",
                             !record.isActive && "opacity-50"
                           )}
                         />
