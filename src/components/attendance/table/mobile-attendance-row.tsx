@@ -39,7 +39,7 @@ export function MobileAttendanceRow({
   const [isExpanded, setIsExpanded] = useState(false);
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const isPresent = record.status.toLowerCase() === "present";
-  const canDelete = record.hasAttendanceRecord && record.attendance_id;
+  const canDelete = Boolean(record.attendance_id);
   
   const handleDeleteClick = () => {
     if (canDelete) {

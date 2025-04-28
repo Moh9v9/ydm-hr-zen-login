@@ -35,7 +35,7 @@ export function DesktopAttendanceRow({
 }: DesktopAttendanceRowProps) {
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const isDisabled = record.status.toLowerCase() !== "present" || !record.isActive;
-  const canDelete = record.hasAttendanceRecord && record.attendance_id;
+  const canDelete = Boolean(record.attendance_id);
 
   const handleDeleteClick = () => {
     if (canDelete) {
