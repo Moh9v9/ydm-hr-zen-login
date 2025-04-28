@@ -1,5 +1,5 @@
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { addDays, subDays } from "date-fns";
 import { useAttendance } from "@/hooks/use-attendance";
 import { AttendanceHeader } from "@/components/attendance/attendance-header";
