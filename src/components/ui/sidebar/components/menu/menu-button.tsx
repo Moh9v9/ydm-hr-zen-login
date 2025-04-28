@@ -5,6 +5,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { useSidebar } from "../../sidebar-provider"
 import { sidebarMenuButtonVariants } from "../../variants"
 import type { SidebarMenuButtonProps } from "../../types"
+import { cn } from "@/lib/utils"
 
 export const SidebarMenuButton = React.forwardRef<
   HTMLButtonElement,
