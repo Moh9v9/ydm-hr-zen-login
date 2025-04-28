@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useMemo } from "react";
 import { format } from "date-fns";
 import { useEmployees } from "./use-employees";
@@ -20,6 +21,19 @@ export interface AttendanceRecord {
   overtimeHours: number | null;
   notes: string | null;
   date: string;
+}
+
+// Interface for raw attendance records from API
+interface RawAttendanceRecord {
+  attendance_id: string;
+  employee_id: string;
+  date: string;
+  status: string;
+  start_time?: string;
+  end_time?: string;
+  overtime?: number;
+  note?: string;
+  fullName?: string;
 }
 
 interface Filters {
@@ -85,11 +99,11 @@ export const useAttendance = (selectedDate: Date, filters: Filters) => {
           throw new Error(`Failed to fetch attendance: ${response.status}`);
         }
         
-        const attendanceRecords = await response.json();
+        const attendanceRecords = await response.json() as RawAttendanceRecord[];
         
         // Map attendance records by employee_id for easier lookup
-        const attendanceMap = new Map();
-        attendanceRecords.forEach((record: any) => {
+        const attendanceMap = new Map<string, RawAttendanceRecord>();
+        attendanceRecords.forEach((record) => {
           attendanceMap.set(record.employee_id, record);
         });
         
@@ -117,10 +131,10 @@ export const useAttendance = (selectedDate: Date, filters: Filters) => {
                 paymentType: employee.paymentType || "Monthly",
                 sponsorship: employee.sponsorship || "",
                 hasAttendanceRecord,
-                startTime: hasAttendanceRecord ? attendanceRecord.startTime : null,
-                endTime: hasAttendanceRecord ? attendanceRecord.endTime : null,
-                overtimeHours: hasAttendanceRecord ? attendanceRecord.overtimeHours : null,
-                notes: hasAttendanceRecord ? attendanceRecord.notes : null,
+                startTime: hasAttendanceRecord && attendanceRecord.start_time ? attendanceRecord.start_time : null,
+                endTime: hasAttendanceRecord && attendanceRecord.end_time ? attendanceRecord.end_time : null,
+                overtimeHours: hasAttendanceRecord && attendanceRecord.overtime ? attendanceRecord.overtime : null,
+                notes: hasAttendanceRecord && attendanceRecord.note ? attendanceRecord.note : null,
                 date: formattedDate,
               });
               
