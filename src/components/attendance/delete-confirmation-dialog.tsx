@@ -32,7 +32,8 @@ export function DeleteConfirmationDialog({
           <AlertDialogTitle>Delete attendance record</AlertDialogTitle>
           <AlertDialogDescription>
             Are you sure you want to delete the attendance record for{" "}
-            <span className="font-medium">{employeeName}</span>? This action cannot be undone.
+            <span className="font-medium text-foreground">{employeeName}</span>? 
+            This action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
