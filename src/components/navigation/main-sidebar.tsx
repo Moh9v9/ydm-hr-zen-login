@@ -36,7 +36,7 @@ const navigationItems = [
 
 export function MainSidebar() {
   const location = useLocation()
-  const { isMobile, setOpen, setOpenMobile } = useSidebar()
+  const { isMobile, setOpen, setOpenMobile, state } = useSidebar()
   const [username] = useState("John Doe") // Replace with actual user data later
 
   const handleNavigation = () => {
@@ -52,7 +52,10 @@ export function MainSidebar() {
       <Button
         variant="ghost"
         size="icon"
-        className="fixed top-4 left-4 z-40 lg:block"
+        className={cn(
+          "fixed top-4 z-40 lg:block transition-all duration-300",
+          state === "expanded" ? "left-[calc(var(--sidebar-width)_-_3rem)]" : "left-4"
+        )}
         asChild
       >
         <SidebarTrigger>
