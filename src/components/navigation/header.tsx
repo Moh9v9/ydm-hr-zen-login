@@ -6,7 +6,7 @@ export function Header() {
   const { user } = useAuth()
 
   return (
-    <header className="sticky top-0 flex items-center justify-end gap-4 p-4 bg-background border-b">
+    <header className="sticky top-0 flex items-center justify-end gap-4 p-4 bg-background border-b z-10 shadow-sm">
       <span className="text-sm font-medium">{user?.email}</span>
       <ThemeToggle />
     </header>
