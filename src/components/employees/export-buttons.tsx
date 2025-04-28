@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Download, FileSpreadsheet, Printer } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Employee } from "@/pages/Employees";
+import { Employee } from "@/hooks/use-employees";
 
 interface ExportButtonsProps {
   employees: Employee[];

@@ -1,6 +1,5 @@
-
 import { Edit, Trash2 } from "lucide-react";
-import { Employee } from "@/pages/Employees";
+import { Employee } from "@/hooks/use-employees";
 import {
   DropdownMenu,
   DropdownMenuContent,
