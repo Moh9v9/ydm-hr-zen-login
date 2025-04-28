@@ -37,7 +37,7 @@ export function AttendanceStatus({
           {status}
         </span>
       </div>
-      {!hasAttendanceRecord && <AttendanceStatusIndicator type="no-record" />}
+      {/* Removed the duplicate indicator here */}
     </div>
   );
 }
