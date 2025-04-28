@@ -1,3 +1,4 @@
+
 import { Employee } from "@/hooks/use-employees";
 import { AttendanceRecord, RawAttendanceRecord, Filters } from "@/types/attendance";
 import { isFriday } from "date-fns";
@@ -12,7 +13,7 @@ export const combineEmployeeAndAttendanceData = (
   
   // Filter function for employees based on attendance requirement
   const shouldShowEmployee = (emp: Employee) => {
-    return isSelectedDateFriday || emp.attendanceRequired !== false;
+    return isSelectedDateFriday || emp.attendance_required !== false;
   };
   
   // First, process all active employees that meet the attendance requirement criteria
