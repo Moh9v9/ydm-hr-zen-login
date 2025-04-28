@@ -1,7 +1,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { EmployeeActionsDropdown } from "@/components/employees/employee-actions";
+import { EmployeeActions } from "@/components/employees/employee-actions";
 import { EmptyState } from "@/components/employees/empty-state";
 import type { Employee } from "@/hooks/use-employees";
 
@@ -60,7 +60,7 @@ export function EmployeeTable({ employees, isLoading }: EmployeeTableProps) {
                 </Badge>
               </TableCell>
               <TableCell className="text-right">
-                <EmployeeActionsDropdown employee={employee} />
+                <EmployeeActions employee={employee} />
               </TableCell>
             </TableRow>
           ))}
