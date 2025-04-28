@@ -11,6 +11,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { cn } from "@/lib/utils";
 import { type AttendanceRecord } from "@/hooks/use-attendance";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface AttendanceTableProps {
   attendanceData: AttendanceRecord[];
@@ -282,9 +283,18 @@ export function AttendanceTable({
                         </span>
                       </div>
                       {!record.hasAttendanceRecord && (
-                        <div className="flex items-center">
-                          <AlertTriangle className="h-4 w-4 text-yellow-500" title="No attendance record for today" />
-                        </div>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="flex items-center">
+                                <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>No attendance record for today</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       )}
                     </div>
                   </TableCell>
