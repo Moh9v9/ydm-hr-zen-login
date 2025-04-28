@@ -1,4 +1,3 @@
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -58,17 +57,17 @@ const formSchema = z.object({
   nationality: z.string().optional(),
   phoneNumber: z.string().optional(),
   startDate: z.date().optional(),
-  email: z.string().email("Invalid email format").optional(),
+  email: z.string().optional(),
   iban: z.string().optional(),
-  iqamaNumber: z.string().min(1, "Iqama number is required"),
+  iqamaNumber: z.string().optional(),
   iqamaExpiryDate: z.date().optional(),
-  jobTitle: z.string().min(1, "Job title is required"),
-  sponsorship: z.string().min(1, "Sponsorship is required"),
-  project: z.string().min(1, "Project is required"),
-  location: z.string().min(1, "Location is required"),
+  jobTitle: z.string().optional(),
+  sponsorship: z.string().optional(),
+  project: z.string().optional(),
+  location: z.string().optional(),
   status: z.enum(["Active", "Inactive"]).default("Active"),
   paymentType: z.enum(["Monthly", "Daily", "Hourly"]).default("Monthly"),
-  rateOfPayment: z.string().min(1, "Payment rate is required"),
+  rateOfPayment: z.string().optional(),
   attendanceRequired: z.boolean().default(false),
   comments: z.string().optional(),
 });
@@ -339,7 +338,7 @@ export function CreateEmployeeForm({ onClose }: CreateEmployeeFormProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Iqama Number <RequiredMarker />
+                      Iqama Number
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
@@ -408,7 +407,7 @@ export function CreateEmployeeForm({ onClose }: CreateEmployeeFormProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Job Title <RequiredMarker />
+                      Job Title
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
@@ -431,7 +430,7 @@ export function CreateEmployeeForm({ onClose }: CreateEmployeeFormProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Sponsorship <RequiredMarker />
+                      Sponsorship
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
@@ -454,7 +453,7 @@ export function CreateEmployeeForm({ onClose }: CreateEmployeeFormProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Project <RequiredMarker />
+                      Project
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
@@ -477,7 +476,7 @@ export function CreateEmployeeForm({ onClose }: CreateEmployeeFormProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Location <RequiredMarker />
+                      Location
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
@@ -500,7 +499,7 @@ export function CreateEmployeeForm({ onClose }: CreateEmployeeFormProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Status <RequiredMarker />
+                      Status
                     </FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
@@ -530,7 +529,7 @@ export function CreateEmployeeForm({ onClose }: CreateEmployeeFormProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Payment Type <RequiredMarker />
+                      Payment Type
                     </FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
@@ -555,7 +554,7 @@ export function CreateEmployeeForm({ onClose }: CreateEmployeeFormProps) {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      Rate of Payment (SAR) <RequiredMarker />
+                      Rate of Payment (SAR)
                     </FormLabel>
                     <FormControl>
                       <div className="relative">
