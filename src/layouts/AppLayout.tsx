@@ -1,6 +1,6 @@
-
 import { SidebarProvider } from "@/components/ui/sidebar"
 import { MainSidebar } from "@/components/navigation/main-sidebar"
+import { Header } from "@/components/navigation/header"
 import { useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { useAuth } from "@/contexts/AuthContext"
@@ -73,6 +73,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       <div className="min-h-screen flex w-full">
         <MainSidebar />
         <main className="flex-1 h-screen overflow-auto">
+          <Header />
           {children}
         </main>
       </div>
