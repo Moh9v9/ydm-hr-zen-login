@@ -46,7 +46,8 @@ export function useLogin() {
         login(
           {
             email: data.email,
-            token: result.token
+            token: result.token,
+            fullName: result.fullName // Include fullName from the response
           },
           data.rememberMe
         );

@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 interface User {
   email: string;
   token: string;
+  fullName?: string; // Add fullName to the User interface
 }
 
 interface AuthContextType {
