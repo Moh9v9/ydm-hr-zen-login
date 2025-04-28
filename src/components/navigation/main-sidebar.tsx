@@ -36,8 +36,19 @@ const navigationItems = [
 
 export function MainSidebar() {
   const location = useLocation()
-  const { isMobile } = useSidebar()
+  const { isMobile, setOpen, setOpenMobile } = useSidebar()
   const [username] = useState("John Doe") // Replace with actual user data later
+
+  // Handler to close sidebar after navigation
+  const handleNavigation = () => {
+    // On mobile, fully close the sidebar
+    if (isMobile) {
+      setOpenMobile(false)
+    } else {
+      // On desktop, collapse the sidebar
+      setOpen(false)
+    }
+  }
 
   return (
     <>
@@ -77,6 +88,7 @@ export function MainSidebar() {
                   asChild
                   isActive={location.pathname === item.path}
                   tooltip={item.title}
+                  onClick={handleNavigation}
                 >
                   <Link
                     to={item.path}
