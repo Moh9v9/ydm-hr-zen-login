@@ -1,6 +1,5 @@
-
 import { useState } from "react";
-import { AlertTriangle, Check } from "lucide-react";
+import { AlertTriangle, Check, X } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -9,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AttendanceStatusIndicator } from "@/components/attendance/attendance-status-indicator";
 import { type AttendanceRecord } from "@/hooks/use-attendance";
+import { cn } from "@/lib/utils";
 
 interface AttendanceTableProps {
   attendanceData: AttendanceRecord[];
@@ -21,7 +21,8 @@ export function AttendanceTable({
   updateAttendanceField,
   isLoading
 }: AttendanceTableProps) {
-  const handleToggleStatus = (employeeId: string, currentStatus: string) => {
+  const handleToggleStatus = (employeeId: string, currentStatus: string, isActive: boolean) => {
+    if (!isActive) return; // Prevent toggling for inactive employees
     const newStatus = currentStatus === "Present" ? "Absent" : "Present";
     updateAttendanceField(employeeId, "status", newStatus);
   };
@@ -69,7 +70,7 @@ export function AttendanceTable({
             <TableHeader className="sticky top-0 bg-card z-10">
               <TableRow>
                 <TableHead className="w-[250px]">Employee</TableHead>
-                <TableHead className="w-[100px]">Status</TableHead>
+                <TableHead className="w-[150px]">Status</TableHead>
                 <TableHead className="w-[120px]">Start Time</TableHead>
                 <TableHead className="w-[120px]">End Time</TableHead>
                 <TableHead className="w-[120px]">Overtime (hrs)</TableHead>
@@ -80,19 +81,22 @@ export function AttendanceTable({
               {attendanceData.map(record => (
                 <TableRow 
                   key={record.employee_id} 
-                  className={`${!record.isActive ? 'bg-red-100/10 dark:bg-red-900/10' : ''}`}
+                  className={cn(
+                    "transition-colors",
+                    !record.isActive && "bg-red-100/10 dark:bg-red-900/10"
+                  )}
                 >
                   <TableCell>
                     <div className="flex flex-col">
                       <div className="font-medium flex items-center gap-2">
                         {record.fullName}
                         {!record.isActive && (
-                          <Badge variant="destructive" className="ml-1 text-xs">
+                          <Badge 
+                            variant="destructive" 
+                            className="ml-1 text-xs bg-red-100 text-red-800 border-red-200"
+                          >
                             Inactive
                           </Badge>
-                        )}
-                        {!record.hasAttendanceRecord && (
-                          <AttendanceStatusIndicator type="no-record" />
                         )}
                       </div>
                       <div className="text-xs text-muted-foreground">
@@ -101,34 +105,47 @@ export function AttendanceTable({
                     </div>
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Switch 
-                        checked={record.status === "Present"} 
-                        onCheckedChange={() => handleToggleStatus(record.employee_id, record.status)} 
-                      />
-                      <span className={record.status === "Present" ? "text-green-600" : "text-red-500"}>
-                        {record.status}
-                      </span>
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2">
+                        <Switch 
+                          checked={record.status === "Present"}
+                          onCheckedChange={() => handleToggleStatus(record.employee_id, record.status, record.isActive)}
+                          disabled={!record.isActive}
+                          className={cn(
+                            record.status === "Present" ? "bg-green-500" : "bg-red-500",
+                            "data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-red-500"
+                          )}
+                        />
+                        <span className={cn(
+                          "font-medium",
+                          record.status === "Present" ? "text-green-600" : "text-red-500"
+                        )}>
+                          {record.status}
+                        </span>
+                      </div>
+                      {!record.hasAttendanceRecord && (
+                        <div className="flex items-center">
+                          <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                        </div>
+                      )}
                     </div>
                   </TableCell>
                   <TableCell>
                     <Input 
-                      // Use text type instead of time to allow any string format
                       type="text" 
                       placeholder="-- : --" 
                       value={record.startTime || ""} 
                       onChange={e => handleTimeChange(record.employee_id, "startTime", e.target.value)}
-                      disabled={record.status !== "Present"} 
+                      disabled={record.status !== "Present" || !record.isActive} 
                     />
                   </TableCell>
                   <TableCell>
                     <Input 
-                      // Use text type instead of time to allow any string format
                       type="text" 
                       placeholder="-- : --" 
                       value={record.endTime || ""} 
                       onChange={e => handleTimeChange(record.employee_id, "endTime", e.target.value)}
-                      disabled={record.status !== "Present"} 
+                      disabled={record.status !== "Present" || !record.isActive} 
                     />
                   </TableCell>
                   <TableCell>
@@ -138,14 +155,14 @@ export function AttendanceTable({
                       step="0.5" 
                       value={record.overtimeHours !== null ? record.overtimeHours : ""}
                       onChange={e => handleOvertimeChange(record.employee_id, e.target.value)}
-                      disabled={record.status !== "Present"} 
+                      disabled={record.status !== "Present" || !record.isActive} 
                     />
                   </TableCell>
                   <TableCell>
                     <Textarea 
                       value={record.notes || ""} 
                       onChange={e => handleNotesChange(record.employee_id, e.target.value)}
-                      disabled={record.status !== "Present"} 
+                      disabled={record.status !== "Present" || !record.isActive} 
                       className="min-h-[50px] max-h-[100px]" 
                       placeholder="Add notes" 
                     />
