@@ -13,7 +13,7 @@ const loginSchema = z.object({
   rememberMe: z.boolean().default(false),
 });
 
-type LoginFormValues = z.infer<typeof loginSchema>;
+export type LoginFormValues = z.infer<typeof loginSchema>;
 
 export function LoginForm() {
   const { handleLogin, loginError, isLoading } = useLogin();
@@ -28,7 +28,12 @@ export function LoginForm() {
   });
 
   const onSubmit = (data: LoginFormValues) => {
-    handleLogin(data);
+    // Ensure all required fields are present before passing to handleLogin
+    handleLogin({
+      email: data.email,
+      password: data.password,
+      rememberMe: data.rememberMe
+    });
   };
 
   return (

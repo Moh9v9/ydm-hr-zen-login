@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 
-interface LoginData {
+export interface LoginData {
   email: string;
   password: string;
   rememberMe: boolean;

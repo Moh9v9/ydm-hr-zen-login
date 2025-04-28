@@ -1,4 +1,3 @@
-
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { useState } from "react";
 import { UseFormReturn } from "react-hook-form";
@@ -12,13 +11,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import { LoginFormValues } from "../login-form";
 
 interface LoginFieldsProps {
-  form: UseFormReturn<{
-    email: string;
-    password: string;
-    rememberMe: boolean;
-  }>;
+  form: UseFormReturn<LoginFormValues>;
   isLoading: boolean;
 }
 
