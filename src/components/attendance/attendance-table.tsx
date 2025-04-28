@@ -80,10 +80,7 @@ export function AttendanceTable({
                       <div className="text-xs text-muted-foreground">
                         {record.id_iqama_national}
                       </div>
-                      <div className="text-xs text-muted-foreground mt-1 flex flex-wrap gap-1">
-                        {record.project}
-                        {record.location}
-                      </div>
+                      
                     </div>
                   </TableCell>
                   <TableCell>
