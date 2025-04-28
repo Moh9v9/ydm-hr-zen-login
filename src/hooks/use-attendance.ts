@@ -4,6 +4,7 @@ import { format, isFriday } from "date-fns";
 import { useEmployees } from "./use-employees";
 import { type AttendanceRecord, type Filters, type BulkUpdateData } from "@/types/attendance";
 import { fetchAttendanceRecords, saveAttendanceRecords } from "@/services/attendance-service";
+import { combineEmployeeAndAttendanceData, filterAttendanceData } from "@/utils/attendance-utils";
 
 export function useAttendance(selectedDate: Date, filters: Filters) {
   const [attendanceData, setAttendanceData] = useState<AttendanceRecord[]>([]);
@@ -30,106 +31,23 @@ export function useAttendance(selectedDate: Date, filters: Filters) {
       try {
         const attendanceRecords = await fetchAttendanceRecords(selectedDate);
         const formattedDate = format(selectedDate, "yyyy-MM-dd");
-        const isSelectedDateFriday = isFriday(selectedDate);
         
         if (employees) {
-          // Process employees based on attendance rules
-          let combinedData: AttendanceRecord[] = [];
+          // Process attendance data
+          const combinedData = combineEmployeeAndAttendanceData(
+            employees,
+            attendanceRecords,
+            formattedDate
+          );
           
-          // First, process all active employees that meet the attendance requirement criteria
-          employees
-            .filter(emp => {
-              const isActive = emp.status?.toLowerCase() === "active";
-              // On Fridays show all employees, otherwise only those with attendance_required=true
-              const shouldShowBasedOnDay = isSelectedDateFriday || emp.attendance_required !== false;
-              return isActive && shouldShowBasedOnDay;
-            })
-            .forEach(emp => {
-              const attendance = attendanceRecords.find(a => a.employee_id === emp.employee_id);
-              
-              combinedData.push({
-                employee_id: emp.employee_id,
-                fullName: emp.fullName,
-                id_iqama_national: emp.id_iqama_national,
-                jobTitle: emp.jobTitle || "",
-                project: emp.project || "",
-                location: emp.location || "",
-                status: attendance ? attendance.status : "Absent",
-                isActive: true,
-                paymentType: emp.paymentType || "Monthly",
-                sponsorship: emp.sponsorship || "",
-                hasAttendanceRecord: !!attendance,
-                startTime: attendance?.start_time || null,
-                endTime: attendance?.end_time || null,
-                overtimeHours: attendance?.overtime !== undefined ? attendance.overtime : null,
-                notes: attendance?.note || null,
-                date: formattedDate,
-              });
-            });
+          // Ensure proper capitalization of status values
+          const normalizedData = combinedData.map(record => ({
+            ...record,
+            status: record.status.charAt(0).toUpperCase() + record.status.slice(1).toLowerCase()
+          }));
           
-          // Then, add inactive employees who have attendance records AND meet the attendance requirement criteria
-          employees
-            .filter(emp => {
-              const isInactive = emp.status?.toLowerCase() !== "active";
-              // On Fridays show all inactive employees with records, otherwise only those with attendance_required=true
-              const shouldShowBasedOnDay = isSelectedDateFriday || emp.attendance_required !== false;
-              const hasRecord = attendanceRecords.some(a => a.employee_id === emp.employee_id);
-              
-              return isInactive && shouldShowBasedOnDay && hasRecord;
-            })
-            .forEach(emp => {
-              const attendance = attendanceRecords.find(a => a.employee_id === emp.employee_id);
-              
-              if (attendance) {
-                combinedData.push({
-                  employee_id: emp.employee_id,
-                  fullName: emp.fullName,
-                  id_iqama_national: emp.id_iqama_national,
-                  jobTitle: emp.jobTitle || "",
-                  project: emp.project || "",
-                  location: emp.location || "",
-                  status: attendance.status,
-                  isActive: false,
-                  paymentType: emp.paymentType || "Monthly",
-                  sponsorship: emp.sponsorship || "",
-                  hasAttendanceRecord: true,
-                  startTime: attendance.start_time || null,
-                  endTime: attendance.end_time || null,
-                  overtimeHours: attendance.overtime !== undefined ? attendance.overtime : null,
-                  notes: attendance.note || null,
-                  date: formattedDate,
-                });
-              }
-            });
-          
-          // Finally, add any attendance records for unknown employees (only on Fridays)
-          if (isSelectedDateFriday) {
-            attendanceRecords
-              .filter(record => !employees.some(emp => emp.employee_id === record.employee_id))
-              .forEach(record => {
-                combinedData.push({
-                  employee_id: record.employee_id,
-                  fullName: "Unknown Employee",
-                  id_iqama_national: "",
-                  jobTitle: "",
-                  project: "",
-                  location: "",
-                  status: record.status,
-                  isActive: false,
-                  paymentType: "Monthly",
-                  sponsorship: "",
-                  hasAttendanceRecord: true,
-                  startTime: record.start_time || null,
-                  endTime: record.end_time || null,
-                  overtimeHours: record.overtime !== undefined ? record.overtime : null,
-                  notes: record.note || null,
-                  date: formattedDate,
-                });
-              });
-          }
-          
-          setOriginalData([...combinedData]);
-          setAttendanceData([...combinedData]);
+          setOriginalData([...normalizedData]);
+          setAttendanceData([...normalizedData]);
           setModifiedRows(new Set());
         }
       } catch (err) {
@@ -145,14 +63,7 @@ export function useAttendance(selectedDate: Date, filters: Filters) {
   
   // Filter the attendance data
   const filteredAttendanceData = useMemo(() => {
-    return attendanceData.filter((record) => {
-      return (
-        (filters.project === "" || record.project === filters.project) &&
-        (filters.location === "" || record.location === filters.location) &&
-        (filters.paymentType === "" || record.paymentType === filters.paymentType) &&
-        (filters.sponsorship === "" || record.sponsorship === filters.sponsorship)
-      );
-    });
+    return filterAttendanceData(attendanceData, filters);
   }, [attendanceData, filters]);
   
   // Update a field for a specific employee's attendance
@@ -163,7 +74,7 @@ export function useAttendance(selectedDate: Date, filters: Filters) {
           const updatedRecord = { ...record, [field]: value };
           
           // If status is set to "Absent", clear time-related fields
-          if (field === 'status' && value === 'Absent') {
+          if (field === 'status' && value.toLowerCase() === 'absent') {
             updatedRecord.startTime = null;
             updatedRecord.endTime = null;
             updatedRecord.overtimeHours = null;
@@ -203,7 +114,7 @@ export function useAttendance(selectedDate: Date, filters: Filters) {
           const newRecord = { ...record, ...updateData };
           
           // If setting to Absent, clear time fields
-          if (updateData.status === 'Absent') {
+          if (updateData.status.toLowerCase() === 'absent') {
             newRecord.startTime = null;
             newRecord.endTime = null;
             newRecord.overtimeHours = null;
@@ -260,7 +171,7 @@ export function useAttendance(selectedDate: Date, filters: Filters) {
   // Calculate summary statistics
   const totalEmployees = filteredAttendanceData.length;
   const totalPresent = filteredAttendanceData.filter(
-    record => record.status === "Present"
+    record => record.status.toLowerCase() === "present"
   ).length;
   const totalAbsent = totalEmployees - totalPresent;
   

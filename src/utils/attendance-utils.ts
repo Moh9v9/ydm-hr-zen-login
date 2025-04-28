@@ -22,6 +22,10 @@ export const combineEmployeeAndAttendanceData = (
     .filter(emp => emp.status?.toLowerCase() === "active" && shouldShowEmployee(emp))
     .forEach(emp => {
       const attendance = attendanceRecords.find(a => a.employee_id === emp.employee_id);
+      const status = attendance ? 
+        // Properly capitalize status (first letter uppercase, rest lowercase)
+        (attendance.status.charAt(0).toUpperCase() + attendance.status.slice(1).toLowerCase()) : 
+        "Absent";
       
       combinedData.push({
         employee_id: emp.employee_id,
@@ -30,7 +34,7 @@ export const combineEmployeeAndAttendanceData = (
         jobTitle: emp.jobTitle || "",
         project: emp.project || "",
         location: emp.location || "",
-        status: attendance ? attendance.status : "Absent",
+        status: status,
         isActive: true,
         paymentType: emp.paymentType || "Monthly",
         sponsorship: emp.sponsorship || "",
@@ -53,6 +57,9 @@ export const combineEmployeeAndAttendanceData = (
       const attendance = attendanceRecords.find(a => a.employee_id === emp.employee_id);
       
       if (attendance) {
+        // Properly capitalize status (first letter uppercase, rest lowercase)
+        const status = attendance.status.charAt(0).toUpperCase() + attendance.status.slice(1).toLowerCase();
+        
         combinedData.push({
           employee_id: emp.employee_id,
           fullName: emp.fullName,
@@ -60,7 +67,7 @@ export const combineEmployeeAndAttendanceData = (
           jobTitle: emp.jobTitle || "",
           project: emp.project || "",
           location: emp.location || "",
-          status: attendance.status,
+          status: status,
           isActive: false,
           paymentType: emp.paymentType || "Monthly",
           sponsorship: emp.sponsorship || "",
@@ -79,6 +86,9 @@ export const combineEmployeeAndAttendanceData = (
     attendanceRecords
       .filter(record => !employees.some(emp => emp.employee_id === record.employee_id))
       .forEach(record => {
+        // Properly capitalize status (first letter uppercase, rest lowercase)
+        const status = record.status.charAt(0).toUpperCase() + record.status.slice(1).toLowerCase();
+        
         combinedData.push({
           employee_id: record.employee_id,
           fullName: "Unknown Employee",
@@ -86,7 +96,7 @@ export const combineEmployeeAndAttendanceData = (
           jobTitle: "",
           project: "",
           location: "",
-          status: record.status,
+          status: status,
           isActive: false,
           paymentType: "Monthly",
           sponsorship: "",
