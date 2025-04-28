@@ -49,19 +49,17 @@ export function MainSidebar() {
 
   return (
     <>
-      {isMobile && (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="fixed top-4 left-4 z-40 lg:hidden"
-          asChild
-        >
-          <SidebarTrigger>
-            <Menu className="h-6 w-6" />
-            <span className="sr-only">Toggle Menu</span>
-          </SidebarTrigger>
-        </Button>
-      )}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="fixed top-4 left-4 z-40 lg:block"
+        asChild
+      >
+        <SidebarTrigger>
+          <Menu className="h-6 w-6" />
+          <span className="sr-only">Toggle Menu</span>
+        </SidebarTrigger>
+      </Button>
 
       <Sidebar className="border-r bg-card">
         <SidebarHeader className="p-4">

@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import { cn } from "@/lib/utils"
 import { Slot } from "@radix-ui/react-slot"
@@ -9,6 +10,7 @@ import {
 import { useSidebar } from "./sidebar-provider"
 import { sidebarMenuButtonVariants } from "./variants"
 import type { SidebarMenuButtonProps } from "./types"
+import { Skeleton } from "@/components/ui/skeleton" // Added import for Skeleton
 
 export const SidebarMenu = React.forwardRef<
   HTMLUListElement,
