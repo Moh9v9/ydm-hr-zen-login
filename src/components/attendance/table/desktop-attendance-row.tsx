@@ -37,7 +37,8 @@ export function DesktopAttendanceRow({
   const isDisabled = record.status.toLowerCase() !== "present" || !record.isActive;
   const canDelete = record.hasAttendanceRecord && record.attendance_id;
 
-  const handleDeleteClick = () => {
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (canDelete) {
       setIsConfirmDialogOpen(true);
     }
@@ -116,7 +117,7 @@ export function DesktopAttendanceRow({
             value={record.notes || ""}
             onChange={(e) => onNotesChange(record.employee_id, e.target.value)}
             disabled={isDisabled}
-            placeholder="Add notes"
+            placeholder="إضافة ملاحظات"
           />
         </TableCell>
         <TableCell className="w-10 pl-2 pr-4">
@@ -124,6 +125,7 @@ export function DesktopAttendanceRow({
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
+                  type="button"
                   onClick={handleDeleteClick}
                   disabled={!canDelete}
                   className={cn(
@@ -132,13 +134,13 @@ export function DesktopAttendanceRow({
                       "text-red-500 hover:bg-red-50 hover:text-red-600 active:text-red-700" : 
                       "text-gray-300 cursor-not-allowed"
                   )}
-                  aria-label="Delete attendance record"
+                  aria-label="حذف سجل الحضور"
                 >
                   <Trash2 size={16} />
                 </button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Delete Attendance</p>
+                <p>حذف سجل الحضور</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

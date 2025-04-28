@@ -33,6 +33,8 @@ export function DeleteConfirmationDialog({
     setIsDeleting(true);
     try {
       await onConfirm();
+    } catch (error) {
+      console.error("Error deleting record:", error);
     } finally {
       setIsDeleting(false);
       onOpenChange(false);
@@ -43,14 +45,14 @@ export function DeleteConfirmationDialog({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete Attendance Record</AlertDialogTitle>
+          <AlertDialogTitle>حذف سجل الحضور</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete this attendance record for {employeeName}?
-            This action cannot be undone.
+            هل أنت متأكد أنك تريد حذف سجل الحضور لـ {employeeName}؟
+            لا يمكن التراجع عن هذا الإجراء.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={isDeleting}>إلغاء</AlertDialogCancel>
           <AlertDialogAction
             onClick={(e) => {
               e.preventDefault();
@@ -62,10 +64,10 @@ export function DeleteConfirmationDialog({
             {isDeleting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Deleting...
+                جاري الحذف...
               </>
             ) : (
-              "Delete"
+              "حذف"
             )}
           </AlertDialogAction>
         </AlertDialogFooter>

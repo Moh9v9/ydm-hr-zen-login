@@ -41,7 +41,8 @@ export function MobileAttendanceRow({
   const isPresent = record.status.toLowerCase() === "present";
   const canDelete = record.hasAttendanceRecord && record.attendance_id;
   
-  const handleDeleteClick = () => {
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (canDelete) {
       setIsConfirmDialogOpen(true);
     }
@@ -82,7 +83,7 @@ export function MobileAttendanceRow({
                   variant="outline"
                   className="ml-1 text-xs bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800"
                 >
-                  Modified
+                  تم التعديل
                 </Badge>
               )}
             </div>
@@ -103,7 +104,7 @@ export function MobileAttendanceRow({
             <div className="grid grid-cols-1 gap-2">
               <div>
                 <label className="text-sm font-medium text-muted-foreground mb-1 block">
-                  Start Time
+                  وقت الحضور
                 </label>
                 <Input
                   type="text"
@@ -116,7 +117,7 @@ export function MobileAttendanceRow({
               </div>
               <div>
                 <label className="text-sm font-medium text-muted-foreground mb-1 block">
-                  End Time
+                  وقت الانصراف
                 </label>
                 <Input
                   type="text"
@@ -129,7 +130,7 @@ export function MobileAttendanceRow({
               </div>
               <div>
                 <label className="text-sm font-medium text-muted-foreground mb-1 block">
-                  Overtime (hrs)
+                  الساعات الإضافية
                 </label>
                 <Input
                   type="number"
@@ -142,13 +143,13 @@ export function MobileAttendanceRow({
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-muted-foreground mb-1 block">Notes</label>
+                <label className="text-sm font-medium text-muted-foreground mb-1 block">ملاحظات</label>
                 <Textarea
                   value={record.notes || ""}
                   onChange={(e) => onNotesChange(record.employee_id, e.target.value)}
                   disabled={!isPresent || !record.isActive}
                   className="min-h-[80px] max-h-[120px] w-full"
-                  placeholder="Add notes"
+                  placeholder="إضافة ملاحظات"
                 />
               </div>
               <div className="flex justify-end pt-2">
@@ -156,6 +157,7 @@ export function MobileAttendanceRow({
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <button
+                        type="button"
                         onClick={handleDeleteClick}
                         disabled={!canDelete}
                         className={cn(
@@ -164,13 +166,13 @@ export function MobileAttendanceRow({
                             "text-red-500 hover:bg-red-50 hover:text-red-600 active:text-red-700" : 
                             "text-gray-300 cursor-not-allowed"
                         )}
-                        aria-label="Delete attendance record"
+                        aria-label="حذف سجل الحضور"
                       >
                         <Trash2 size={20} />
                       </button>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>Delete Attendance</p>
+                      <p>حذف سجل الحضور</p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
