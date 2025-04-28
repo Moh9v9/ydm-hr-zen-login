@@ -54,8 +54,8 @@ export function MainSidebar() {
         variant="ghost" 
         size="icon" 
         className={cn(
-          "fixed top-4 z-30 lg:block transition-all duration-300", // Lowered z-index to go under header
-          state === "expanded" ? "left-[calc(var(--sidebar-width)_-_3rem)]" : "left-20" // Adjusted left position when collapsed
+          "fixed top-20 z-30 lg:block transition-all duration-300", // Changed top-4 to top-20 to position below header
+          state === "expanded" ? "left-[calc(var(--sidebar-width)_-_3rem)]" : "left-20"
         )} 
         asChild
       >
