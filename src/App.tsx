@@ -25,14 +25,19 @@ const App = () => (
             <Toaster />
             <Sonner />
             <Routes>
+              {/* Public Routes */}
               <Route path="/" element={<Login />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               
-              {/* Protected Routes */}
+              {/* Protected Routes - All wrapped in AppLayout */}
               <Route path="/dashboard" element={<AppLayout><Dashboard /></AppLayout>} />
               <Route path="/employees" element={<AppLayout><Employees /></AppLayout>} />
+              <Route path="/attendance" element={<AppLayout><Navigate to="/dashboard" replace /></AppLayout>} />
+              <Route path="/payroll" element={<AppLayout><Navigate to="/dashboard" replace /></AppLayout>} />
+              <Route path="/leaves" element={<AppLayout><Navigate to="/dashboard" replace /></AppLayout>} />
+              <Route path="/users" element={<AppLayout><Navigate to="/dashboard" replace /></AppLayout>} />
               
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              {/* 404 Route - Also wrapped in AppLayout if user is authenticated */}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AuthProvider>
