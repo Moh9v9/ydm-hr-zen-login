@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { AlertTriangle } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -154,17 +155,43 @@ export function AttendanceTable({
                     />
                   </TableCell>
                   <TableCell>
-                    <AttendanceInputs
-                      employeeId={record.employee_id}
-                      startTime={record.startTime}
-                      endTime={record.endTime}
-                      overtimeHours={record.overtimeHours}
-                      notes={record.notes}
-                      status={record.status}
-                      isActive={record.isActive}
-                      onTimeChange={handleTimeChange}
-                      onOvertimeChange={handleOvertimeChange}
-                      onNotesChange={handleNotesChange}
+                    <input
+                      type="text"
+                      className="w-full h-10 px-3 py-2 border rounded-md"
+                      placeholder="-- : --"
+                      value={record.startTime || ""}
+                      onChange={(e) => handleTimeChange(record.employee_id, "startTime", e.target.value)}
+                      disabled={record.status.toLowerCase() !== "present" || !record.isActive}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <input
+                      type="text"
+                      className="w-full h-10 px-3 py-2 border rounded-md"
+                      placeholder="-- : --"
+                      value={record.endTime || ""}
+                      onChange={(e) => handleTimeChange(record.employee_id, "endTime", e.target.value)}
+                      disabled={record.status.toLowerCase() !== "present" || !record.isActive}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.5"
+                      className="w-full h-10 px-3 py-2 border rounded-md"
+                      value={record.overtimeHours !== null ? record.overtimeHours : ""}
+                      onChange={(e) => handleOvertimeChange(record.employee_id, e.target.value)}
+                      disabled={record.status.toLowerCase() !== "present" || !record.isActive}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <textarea
+                      className="min-h-[50px] max-h-[100px] w-full px-3 py-2 border rounded-md"
+                      value={record.notes || ""}
+                      onChange={(e) => handleNotesChange(record.employee_id, e.target.value)}
+                      disabled={record.status.toLowerCase() !== "present" || !record.isActive}
+                      placeholder="Add notes"
                     />
                   </TableCell>
                 </TableRow>
