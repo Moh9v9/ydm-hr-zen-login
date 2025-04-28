@@ -100,6 +100,7 @@ export default function Attendance() {
           attendanceData={attendanceData}
           updateAttendanceField={updateAttendanceField}
           isLoading={isLoading}
+          modifiedRows={modifiedRows}
         />
       </div>
 
