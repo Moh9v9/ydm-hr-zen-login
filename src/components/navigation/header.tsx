@@ -1,15 +1,12 @@
 
 import { useAuth } from "@/contexts/AuthContext"
-import { useLanguage } from "@/contexts/LanguageContext"
 import { ThemeToggle } from "@/components/theme-toggle"
-import { LanguageToggle } from "@/components/language-toggle"
 import { UserRound, LogOut } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 export function Header() {
   const { user, logout } = useAuth()
-  const { t } = useLanguage()
 
   return (
     <header className="sticky top-0 flex items-center justify-between gap-4 p-4 bg-background border-b z-10 shadow-sm">
@@ -20,7 +17,7 @@ export function Header() {
           className="h-8 w-8" 
         />
         <span className="font-semibold text-lg text-foreground whitespace-nowrap">
-          {t("common.app.name")}
+          YDM HR
         </span>
       </div>
 
@@ -31,14 +28,13 @@ export function Header() {
             {user?.fullName || user?.email}
           </span>
         </div>
-        <LanguageToggle />
         <ThemeToggle />
         <Button
           variant="ghost"
           size="icon"
           onClick={logout}
           className="hover:bg-muted"
-          title={t("common.actions.logout")}
+          title="Logout"
         >
           <LogOut className="h-4 w-4" />
         </Button>

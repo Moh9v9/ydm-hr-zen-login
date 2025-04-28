@@ -1,7 +1,6 @@
 
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,14 +28,11 @@ export function DeleteConfirmationDialog({
   employeeName,
 }: DeleteConfirmationDialogProps) {
   const [isDeleting, setIsDeleting] = useState(false);
-  const { t } = useLanguage();
 
   const handleConfirmDelete = async () => {
     setIsDeleting(true);
     try {
       await onConfirm();
-    } catch (error) {
-      console.error("Error deleting record:", error);
     } finally {
       setIsDeleting(false);
       onOpenChange(false);
@@ -47,15 +43,14 @@ export function DeleteConfirmationDialog({
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>{t("attendance.delete.title")}</AlertDialogTitle>
+          <AlertDialogTitle>Delete Attendance Record</AlertDialogTitle>
           <AlertDialogDescription>
-            {t("attendance.delete.confirmation")} {employeeName}؟
-            <br />
-            {t("attendance.delete.warning")}
+            Are you sure you want to delete this attendance record for {employeeName}?
+            This action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isDeleting}>{t("common.actions.cancel")}</AlertDialogCancel>
+          <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={(e) => {
               e.preventDefault();
@@ -67,10 +62,10 @@ export function DeleteConfirmationDialog({
             {isDeleting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {t("attendance.delete.deleting")}
+                Deleting...
               </>
             ) : (
-              t("attendance.delete.delete")
+              "Delete"
             )}
           </AlertDialogAction>
         </AlertDialogFooter>

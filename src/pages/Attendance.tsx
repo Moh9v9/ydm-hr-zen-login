@@ -10,10 +10,8 @@ import { AttendanceDateNav } from "@/components/attendance/attendance-date-nav";
 import { AttendanceActions } from "@/components/attendance/attendance-actions";
 import { UpdateAllModal } from "@/components/attendance/update-all-modal";
 import { toast } from "sonner";
-import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Attendance() {
-  const { t } = useLanguage();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [filters, setFilters] = useState({
     project: "",
@@ -41,15 +39,15 @@ export default function Attendance() {
 
   useEffect(() => {
     if (error) {
-      toast.error(t("common.status.error"), {
+      toast.error("Error loading attendance data", {
         description: error.message
       });
     }
-  }, [error, t]);
+  }, [error]);
   
   const handleSaveChanges = async () => {
     if (modifiedRows.size === 0 && deletedRecords.size === 0) {
-      toast.info(t("common.status.noChanges"));
+      toast.info("No changes to save");
       return;
     }
     
@@ -58,15 +56,13 @@ export default function Attendance() {
       await saveChanges();
       
       if (deletedRecords.size > 0) {
-        toast.success(t("common.status.success"), {
-          description: `${deletedRecords.size} ${t("attendance.actions.records")} ${t("common.actions.delete")}`
-        });
+        toast.success(`${deletedRecords.size} attendance record(s) deleted successfully`);
       } else {
-        toast.success(t("common.status.success"));
+        toast.success("Attendance updated successfully");
       }
     } catch (error) {
-      toast.error(t("common.status.error"), {
-        description: error instanceof Error ? error.message : t("common.status.unknownError")
+      toast.error("Failed to save attendance. Please try again.", {
+        description: error instanceof Error ? error.message : "Unknown error"
       });
     } finally {
       setIsSaving(false);

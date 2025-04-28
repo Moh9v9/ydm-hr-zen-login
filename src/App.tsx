@@ -6,7 +6,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import { ThemeProvider } from "@/components/theme-provider"
 import { AuthProvider } from "@/contexts/AuthContext"
-import { LanguageProvider } from "@/contexts/LanguageContext"
 import { AppLayout } from "@/layouts/AppLayout"
 import { LoadingScreen } from "@/components/LoadingScreen"
 import Login from "./pages/Login"
@@ -21,32 +20,30 @@ const queryClient = new QueryClient()
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider defaultTheme="system">
-      <LanguageProvider>
-        <TooltipProvider>
-          <BrowserRouter>
-            <AuthProvider>
-              <Toaster />
-              <Sonner />
-              <Routes>
-                {/* Public Routes */}
-                <Route path="/" element={<Login />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                
-                {/* Protected Routes - All wrapped in AppLayout */}
-                <Route path="/dashboard" element={<AppLayout><Dashboard /></AppLayout>} />
-                <Route path="/employees" element={<AppLayout><Employees /></AppLayout>} />
-                <Route path="/attendance" element={<AppLayout><Attendance /></AppLayout>} />
-                <Route path="/payroll" element={<AppLayout><Navigate to="/dashboard" replace /></AppLayout>} />
-                <Route path="/leaves" element={<AppLayout><Navigate to="/dashboard" replace /></AppLayout>} />
-                <Route path="/users" element={<AppLayout><Navigate to="/dashboard" replace /></AppLayout>} />
-                
-                {/* 404 Route - Also wrapped in AppLayout if user is authenticated */}
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </AuthProvider>
-          </BrowserRouter>
-        </TooltipProvider>
-      </LanguageProvider>
+      <TooltipProvider>
+        <BrowserRouter>
+          <AuthProvider>
+            <Toaster />
+            <Sonner />
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={<Login />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              
+              {/* Protected Routes - All wrapped in AppLayout */}
+              <Route path="/dashboard" element={<AppLayout><Dashboard /></AppLayout>} />
+              <Route path="/employees" element={<AppLayout><Employees /></AppLayout>} />
+              <Route path="/attendance" element={<AppLayout><Attendance /></AppLayout>} />
+              <Route path="/payroll" element={<AppLayout><Navigate to="/dashboard" replace /></AppLayout>} />
+              <Route path="/leaves" element={<AppLayout><Navigate to="/dashboard" replace /></AppLayout>} />
+              <Route path="/users" element={<AppLayout><Navigate to="/dashboard" replace /></AppLayout>} />
+              
+              {/* 404 Route - Also wrapped in AppLayout if user is authenticated */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </AuthProvider>
+        </BrowserRouter>
+      </TooltipProvider>
     </ThemeProvider>
   </QueryClientProvider>
 )

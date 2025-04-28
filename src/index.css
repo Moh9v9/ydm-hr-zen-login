@@ -76,63 +76,6 @@
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
-  
-  /* RTL Support */
-  [dir="rtl"] .rtl-flip {
-    transform: scaleX(-1);
-  }
-  
-  [dir="rtl"] .ms-auto {
-    margin-right: auto !important;
-    margin-left: 0 !important;
-  }
-  
-  [dir="rtl"] .me-auto {
-    margin-left: auto !important;
-    margin-right: 0 !important;
-  }
-
-  [dir="rtl"] .ms-1 {
-    margin-right: 0.25rem !important;
-    margin-left: 0 !important;
-  }
-
-  [dir="rtl"] .ms-2 {
-    margin-right: 0.5rem !important;
-    margin-left: 0 !important;
-  }
-
-  [dir="rtl"] .me-1 {
-    margin-left: 0.25rem !important;
-    margin-right: 0 !important;
-  }
-
-  [dir="rtl"] .me-2 {
-    margin-left: 0.5rem !important;
-    margin-right: 0 !important;
-  }
-  
-  [dir="rtl"] .mr-2 {
-    margin-left: 0.5rem !important;
-    margin-right: 0 !important;
-  }
-  
-  [dir="rtl"] .ml-2 {
-    margin-right: 0.5rem !important;
-    margin-left: 0 !important;
-  }
-  
-  [dir="rtl"] .ml-1 {
-    margin-right: 0.25rem !important;
-    margin-left: 0 !important;
-  }
-  
-  [dir="rtl"] .mr-1 {
-    margin-left: 0.25rem !important;
-    margin-right: 0 !important;
-  }
-  
-  /* Add any additional RTL overrides here */
 }
 
 @layer utilities {
