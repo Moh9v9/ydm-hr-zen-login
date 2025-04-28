@@ -30,8 +30,8 @@ export function useUpdateEmployee({ employeeId, onSuccess }: UseUpdateEmployeePr
         },
         body: JSON.stringify({
           entity: "employees",
-          operation: "get",
-          id: id,
+          operation: "read",
+          employee_id: id
         }),
       });
 
@@ -42,25 +42,32 @@ export function useUpdateEmployee({ employeeId, onSuccess }: UseUpdateEmployeePr
 
       const employeeData = await response.json();
       
+      // Handle both single employee object and array responses
+      const data = Array.isArray(employeeData) ? employeeData.find(emp => emp.employee_id === id) : employeeData;
+      
+      if (!data) {
+        throw new Error("Employee not found");
+      }
+      
       // Convert API response to form values format
       const formData: FormValues = {
-        fullName: employeeData.fullName || "",
-        nationality: employeeData.nationality || "",
-        phoneNumber: employeeData.phone?.toString() || "",
-        email: employeeData.email || "",
-        iban: employeeData.iban_bank || "",
-        startDate: employeeData.start_date ? new Date(employeeData.start_date) : undefined,
-        iqamaNumber: employeeData.id_iqama_national?.toString() || "",
-        iqamaExpiryDate: employeeData.iqama_expiry_date ? new Date(employeeData.iqama_expiry_date) : undefined,
-        jobTitle: employeeData.jobTitle || "",
-        sponsorship: employeeData.sponsorship || "",
-        project: employeeData.project || "",
-        location: employeeData.location || "",
-        status: (employeeData.status === "active" || employeeData.status === "Active") ? "Active" : "Inactive",
-        paymentType: employeeData.paymentType || "Monthly",
-        rateOfPayment: employeeData.rateOfPayment?.toString() || "",
-        attendanceRequired: employeeData.attendance_required || false,
-        comments: employeeData.comments || "",
+        fullName: data.fullName || "",
+        nationality: data.nationality || "",
+        phoneNumber: data.phone?.toString() || "",
+        email: data.email || "",
+        iban: data.iban_bank || "",
+        startDate: data.start_date ? new Date(data.start_date) : undefined,
+        iqamaNumber: data.id_iqama_national?.toString() || "",
+        iqamaExpiryDate: data.iqama_expiry_date ? new Date(data.iqama_expiry_date) : undefined,
+        jobTitle: data.jobTitle || "",
+        sponsorship: data.sponsorship || "",
+        project: data.project || "",
+        location: data.location || "",
+        status: (data.status === "active" || data.status === "Active") ? "Active" : "Inactive",
+        paymentType: data.paymentType || "Monthly",
+        rateOfPayment: data.rateOfPayment?.toString() || "",
+        attendanceRequired: data.attendance_required || false,
+        comments: data.comments || "",
       };
 
       setEmployee(formData);
