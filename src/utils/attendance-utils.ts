@@ -13,10 +13,8 @@ export const combineEmployeeAndAttendanceData = (
   
   // Filter function for employees based on attendance requirement
   const shouldShowEmployee = (emp: Employee) => {
-    // Since the Employee interface doesn't have attendance_required property,
-    // let's check if it has the attendanceRequired property instead,
-    // or fall back to checking if the employee should always be shown on Fridays
-    return isSelectedDateFriday || emp.attendanceRequired !== false;
+    // Check if it's Friday or if the employee's attendance is required
+    return isSelectedDateFriday || emp.attendance_required !== false;
   };
   
   // First, process all active employees that meet the attendance requirement criteria
