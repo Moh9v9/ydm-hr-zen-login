@@ -2,7 +2,9 @@
 import { format } from "date-fns";
 import { Calendar } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { ar, enUS } from "date-fns/locale";
+// Import locales individually
+import { ar } from "date-fns/locale/ar";
+import { enUS } from "date-fns/locale/en-US";
 
 interface AttendanceHeaderProps {
   selectedDate: Date;
