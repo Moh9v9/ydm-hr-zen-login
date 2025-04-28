@@ -35,6 +35,7 @@ export function UpdateAllModal({
     
     const updateData = {
       status,
+      // Pass time values as plain strings
       startTime: startTime || null,
       endTime: endTime || null,
       overtimeHours: overtimeHours ? parseFloat(overtimeHours) : null,
@@ -99,7 +100,9 @@ export function UpdateAllModal({
                     <Label htmlFor="startTime">Start Time</Label>
                     <Input
                       id="startTime"
-                      type="time"
+                      // Change to text type to accept any string format
+                      type="text"
+                      placeholder="e.g. 07:00 am"
                       value={startTime}
                       onChange={(e) => setStartTime(e.target.value)}
                     />
@@ -108,7 +111,9 @@ export function UpdateAllModal({
                     <Label htmlFor="endTime">End Time</Label>
                     <Input
                       id="endTime"
-                      type="time"
+                      // Change to text type to accept any string format
+                      type="text"
+                      placeholder="e.g. 05:00 pm"
                       value={endTime}
                       onChange={(e) => setEndTime(e.target.value)}
                     />

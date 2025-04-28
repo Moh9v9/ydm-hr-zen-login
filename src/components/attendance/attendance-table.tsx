@@ -26,6 +26,7 @@ export function AttendanceTable({
     updateAttendanceField(employeeId, "status", newStatus);
   };
   
+  // Simply pass the string value directly without any conversion
   const handleTimeChange = (employeeId: string, field: string, value: string) => {
     updateAttendanceField(employeeId, field, value || null);
   };
@@ -112,7 +113,9 @@ export function AttendanceTable({
                   </TableCell>
                   <TableCell>
                     <Input 
-                      type="time" 
+                      // Use text type instead of time to allow any string format
+                      type="text" 
+                      placeholder="-- : --" 
                       value={record.startTime || ""} 
                       onChange={e => handleTimeChange(record.employee_id, "startTime", e.target.value)}
                       disabled={record.status !== "Present"} 
@@ -120,7 +123,9 @@ export function AttendanceTable({
                   </TableCell>
                   <TableCell>
                     <Input 
-                      type="time" 
+                      // Use text type instead of time to allow any string format
+                      type="text" 
+                      placeholder="-- : --" 
                       value={record.endTime || ""} 
                       onChange={e => handleTimeChange(record.employee_id, "endTime", e.target.value)}
                       disabled={record.status !== "Present"} 

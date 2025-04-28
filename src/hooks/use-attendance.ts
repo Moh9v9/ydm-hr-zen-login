@@ -15,8 +15,8 @@ export interface AttendanceRecord {
   paymentType: string;
   sponsorship: string;
   hasAttendanceRecord: boolean;
-  startTime: string | null; // Changed to string | null for direct string storage
-  endTime: string | null;   // Changed to string | null for direct string storage
+  startTime: string | null; // Plain string value (e.g., "07:00 am")
+  endTime: string | null;   // Plain string value (e.g., "05:00 pm")
   overtimeHours: number | null;
   notes: string | null;
   date: string;
@@ -28,8 +28,8 @@ interface RawAttendanceRecord {
   employee_id: string;
   date: string;
   status: string;
-  start_time?: string;     // Optional string from API
-  end_time?: string;       // Optional string from API
+  start_time?: string;     // Plain string from API (e.g., "07:00 am")
+  end_time?: string;       // Plain string from API (e.g., "05:00 pm")
   overtime?: number;
   note?: string;
 }
@@ -116,8 +116,9 @@ export const useAttendance = (selectedDate: Date, filters: Filters) => {
               paymentType: emp.paymentType || "Monthly",
               sponsorship: emp.sponsorship || "",
               hasAttendanceRecord: !!attendance,
-              startTime: attendance?.start_time || null,  // Direct string assignment
-              endTime: attendance?.end_time || null,      // Direct string assignment
+              // Direct string assignment without any conversion
+              startTime: attendance?.start_time || null,
+              endTime: attendance?.end_time || null,
               overtimeHours: attendance?.overtime !== undefined ? attendance.overtime : null,
               notes: attendance?.note || null,
               date: formattedDate,
@@ -139,8 +140,9 @@ export const useAttendance = (selectedDate: Date, filters: Filters) => {
                 paymentType: "Monthly",
                 sponsorship: "",
                 hasAttendanceRecord: true,
-                startTime: record.start_time || null,     // Direct string assignment
-                endTime: record.end_time || null,        // Direct string assignment
+                // Direct string assignment without any conversion
+                startTime: record.start_time || null,
+                endTime: record.end_time || null,
                 overtimeHours: record.overtime !== undefined ? record.overtime : null,
                 notes: record.note || null,
                 date: formattedDate,
@@ -256,6 +258,7 @@ export const useAttendance = (selectedDate: Date, filters: Filters) => {
       employee_id: record.employee_id,
       date: record.date,
       status: record.status,
+      // Send time values as plain strings without any conversion
       startTime: record.startTime,
       endTime: record.endTime,
       overtimeHours: record.overtimeHours,
