@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { AlertTriangle, ChevronDown, ChevronUp } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -92,7 +91,7 @@ export function AttendanceTable({
     );
   }
   
-  // Mobile View
+  // Update the mobile view
   if (isMobile) {
     return (
       <div className="space-y-4">
@@ -131,30 +130,21 @@ export function AttendanceTable({
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
-                    {/* Status toggle for mobile view */}
                     <div className="flex items-center gap-2">
                       <Switch 
                         checked={isPresent}
                         onCheckedChange={() => handleToggleStatus(record.employee_id, record.status, record.isActive)}
                         disabled={!record.isActive}
-                        className={cn(
-                          "relative",
-                          isPresent 
-                            ? "bg-green-500 dark:bg-green-600" 
-                            : "bg-red-500 dark:bg-red-600"
-                        )}
                       />
                       <span className={cn(
-                        "font-medium text-sm",
-                        isPresent
-                          ? "text-green-600 dark:text-green-400" 
-                          : "text-red-600 dark:text-red-400"
+                        "font-medium text-sm transition-colors",
+                        isPresent ? "text-[#22C55E]" : "text-[#EF4444]"
                       )}>
                         {record.status}
                       </span>
                     </div>
                     {!record.hasAttendanceRecord && (
-                      <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                      <AlertTriangle className="h-4 w-4 text-[#EF4444]" />
                     )}
                     {expandedRows.has(record.employee_id) ? (
                       <ChevronUp className="h-4 w-4" />
@@ -221,7 +211,7 @@ export function AttendanceTable({
     );
   }
   
-  // Desktop/Tablet View
+  // Update the desktop view
   return (
     <div className="rounded-md border shadow-sm overflow-hidden bg-card">
       <ScrollArea className="h-[calc(100vh-26rem)]">
@@ -275,18 +265,10 @@ export function AttendanceTable({
                             checked={isPresent}
                             onCheckedChange={() => handleToggleStatus(record.employee_id, record.status, record.isActive)}
                             disabled={!record.isActive}
-                            className={cn(
-                              "relative",
-                              isPresent 
-                                ? "bg-green-500 dark:bg-green-600" 
-                                : "bg-red-500 dark:bg-red-600"
-                            )}
                           />
                           <span className={cn(
-                            "font-medium text-sm",
-                            isPresent
-                              ? "text-green-600 dark:text-green-400" 
-                              : "text-red-600 dark:text-red-400"
+                            "font-medium text-sm transition-colors",
+                            isPresent ? "text-[#22C55E]" : "text-[#EF4444]"
                           )}>
                             {record.status}
                           </span>
@@ -296,7 +278,7 @@ export function AttendanceTable({
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <div className="flex items-center">
-                                  <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                                  <AlertTriangle className="h-4 w-4 text-[#EF4444]" />
                                 </div>
                               </TooltipTrigger>
                               <TooltipContent>
