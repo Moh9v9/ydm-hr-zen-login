@@ -5,9 +5,15 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 
 interface AttendanceStatusIndicatorProps {
   type: "no-record" | "inactive" | "modified";
+  tooltipText?: string; // Optional custom tooltip text
+  className?: string; // Allow custom styling
 }
 
-export function AttendanceStatusIndicator({ type }: AttendanceStatusIndicatorProps) {
+export function AttendanceStatusIndicator({ 
+  type, 
+  tooltipText, 
+  className 
+}: AttendanceStatusIndicatorProps) {
   if (type === "no-record") {
     return (
       <TooltipProvider>
@@ -18,7 +24,7 @@ export function AttendanceStatusIndicator({ type }: AttendanceStatusIndicatorPro
             </div>
           </TooltipTrigger>
           <TooltipContent>
-            <p>No attendance record for today</p>
+            <p>{tooltipText || "No attendance record for today"}</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
@@ -27,7 +33,7 @@ export function AttendanceStatusIndicator({ type }: AttendanceStatusIndicatorPro
 
   if (type === "inactive") {
     return (
-      <Badge variant="outline" className="text-xs bg-red-100 text-red-800 border-red-200">
+      <Badge variant="outline" className="text-xs bg-red-100 text-red-800 border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800">
         Inactive
       </Badge>
     );
@@ -35,7 +41,7 @@ export function AttendanceStatusIndicator({ type }: AttendanceStatusIndicatorPro
 
   if (type === "modified") {
     return (
-      <Badge variant="outline" className="text-xs bg-yellow-100 text-yellow-800 border-yellow-200">
+      <Badge variant="outline" className="text-xs bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-300 dark:border-yellow-800">
         Modified
       </Badge>
     );

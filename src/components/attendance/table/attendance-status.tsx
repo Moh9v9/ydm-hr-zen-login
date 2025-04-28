@@ -1,8 +1,7 @@
 
 import { Switch } from "@/components/ui/switch";
-import { AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { TooltipProvider, Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { AttendanceStatusIndicator } from "@/components/attendance/attendance-status-indicator";
 
 interface AttendanceStatusProps {
   status: string;
@@ -38,20 +37,7 @@ export function AttendanceStatus({
           {status}
         </span>
       </div>
-      {!hasAttendanceRecord && (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <div className="flex items-center">
-                <AlertTriangle className="h-4 w-4 text-[#EF4444]" />
-              </div>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>No attendance record for today</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      )}
+      {!hasAttendanceRecord && <AttendanceStatusIndicator type="no-record" />}
     </div>
   );
 }
