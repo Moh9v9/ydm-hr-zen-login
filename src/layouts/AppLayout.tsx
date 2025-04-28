@@ -3,20 +3,30 @@ import { SidebarProvider } from "@/components/ui/sidebar"
 import { MainSidebar } from "@/components/navigation/main-sidebar"
 import { useNavigate } from "react-router-dom"
 import { useEffect } from "react"
+import { useAuth } from "@/contexts/AuthContext"
+import { LoadingScreen } from "@/components/LoadingScreen"
 
 export interface AppLayoutProps {
   children: React.ReactNode
 }
 
 export function AppLayout({ children }: AppLayoutProps) {
-  const navigate = useNavigate()
+  const { user, isLoading } = useAuth();
+  const navigate = useNavigate();
 
-  // Basic auth check - redirect to login if no session exists
   useEffect(() => {
-    if (!localStorage.getItem("ydm-user-session")) {
-      navigate("/")
+    if (!isLoading && !user) {
+      navigate("/");
     }
-  }, [navigate])
+  }, [user, isLoading, navigate]);
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <SidebarProvider defaultOpen>
@@ -27,5 +37,5 @@ export function AppLayout({ children }: AppLayoutProps) {
         </main>
       </div>
     </SidebarProvider>
-  )
+  );
 }

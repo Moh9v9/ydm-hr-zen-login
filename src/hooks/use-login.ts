@@ -1,7 +1,7 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 export interface LoginData {
   email: string;
@@ -11,7 +11,7 @@ export interface LoginData {
 
 export function useLogin() {
   const { toast } = useToast();
-  const navigate = useNavigate();
+  const { login } = useAuth();
   const [loginError, setLoginError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -43,20 +43,18 @@ export function useLogin() {
         setLoginError(result.error);
         console.error("Login error:", result.error);
       } else {
-        if (data.rememberMe) {
-          localStorage.setItem("ydm-user-session", JSON.stringify({
+        login(
+          {
             email: data.email,
-            timestamp: new Date().toISOString(),
             token: result.token
-          }));
-        }
+          },
+          data.rememberMe
+        );
         
         toast({
           title: "Login successful",
           description: "Welcome back!",
         });
-        
-        navigate("/dashboard");
       }
     } catch (error) {
       console.error("Login error:", error);

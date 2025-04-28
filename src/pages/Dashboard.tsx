@@ -1,14 +1,9 @@
 
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Dashboard = () => {
-  const navigate = useNavigate();
-  
-  const handleLogout = () => {
-    localStorage.removeItem("ydm-user-session");
-    navigate("/");
-  };
+  const { logout } = useAuth();
   
   return (
     <div className="min-h-screen p-8">
@@ -21,7 +16,7 @@ const Dashboard = () => {
           
           <Button
             variant="outline"
-            onClick={handleLogout}
+            onClick={logout}
           >
             Logout
           </Button>
