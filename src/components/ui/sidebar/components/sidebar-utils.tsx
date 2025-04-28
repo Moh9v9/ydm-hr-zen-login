@@ -1,8 +1,8 @@
-
 import * as React from "react"
 import { cn } from "@/lib/utils"
 import { Separator } from "@/components/ui/separator"
 import { Input } from "@/components/ui/input"
+import { useSidebar } from "../sidebar-provider"
 
 export const SidebarRail = React.forwardRef<HTMLButtonElement, React.ComponentProps<"button">>(
   ({ className, ...props }, ref) => {
