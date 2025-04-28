@@ -7,6 +7,7 @@ export function useAttendanceModifications(
   setAttendanceData: React.Dispatch<React.SetStateAction<AttendanceRecord[]>>
 ) {
   const [modifiedRows, setModifiedRows] = useState<Set<string>>(new Set());
+  const [deletedRecords, setDeletedRecords] = useState<Set<string>>(new Set());
 
   // Update a field for a specific employee's attendance
   const updateAttendanceField = useCallback((employeeId: string, field: string, value: any) => {
@@ -38,6 +39,26 @@ export function useAttendanceModifications(
         }
         return record;
       });
+    });
+  }, [setAttendanceData]);
+  
+  // Mark a record for deletion
+  const markRecordForDeletion = useCallback((attendanceId: string | undefined) => {
+    if (!attendanceId) return;
+    
+    setAttendanceData(prevData => {
+      return prevData.map(record => {
+        if (record.attendance_id === attendanceId) {
+          return { ...record, markedForDeletion: true };
+        }
+        return record;
+      });
+    });
+    
+    setDeletedRecords(prev => {
+      const next = new Set(prev);
+      next.add(attendanceId);
+      return next;
     });
   }, [setAttendanceData]);
   
@@ -79,7 +100,9 @@ export function useAttendanceModifications(
 
   return {
     modifiedRows,
+    deletedRecords,
     updateAttendanceField,
+    markRecordForDeletion,
     applyBulkUpdate,
   };
 }

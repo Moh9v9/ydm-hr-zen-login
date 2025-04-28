@@ -101,3 +101,27 @@ export const saveAttendanceRecords = async (records: any[]) => {
   
   return { success: true };
 };
+
+export const deleteAttendanceRecords = async (attendanceIds: string[]) => {
+  const deletePayload = {
+    entity: "attendance",
+    operation: "delete",
+    data: attendanceIds.map(id => ({
+      attendance_id: id
+    }))
+  };
+  
+  const response = await fetch("https://n8n.moh9v9.com/webhook/google-proxy", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(deletePayload),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to delete attendance: ${response.status}`);
+  }
+  
+  return { success: true };
+};

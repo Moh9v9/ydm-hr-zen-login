@@ -5,7 +5,8 @@ import { Employee } from "../use-employees";
 import { AttendanceRecord } from "@/types/attendance";
 import { 
   saveAttendanceRecords, 
-  fetchAttendanceRecords
+  fetchAttendanceRecords,
+  deleteAttendanceRecords
 } from "@/services/attendance-service";
 import { combineEmployeeAndAttendanceData } from "@/utils/attendance-utils";
 
@@ -15,15 +16,16 @@ export function useAttendanceActions(
   selectedDate: Date,
   employees: Employee[] | undefined,
   setOriginalData: React.Dispatch<React.SetStateAction<AttendanceRecord[]>>,
-  setAttendanceData: React.Dispatch<React.SetStateAction<AttendanceRecord[]>>
+  setAttendanceData: React.Dispatch<React.SetStateAction<AttendanceRecord[]>>,
+  deletedRecords: Set<string>
 ) {
   // Save changes to the backend
   const saveChanges = useCallback(async () => {
-    if (modifiedRows.size === 0) return;
+    if (modifiedRows.size === 0 && deletedRecords.size === 0) return;
     
     // Records to update or add
     const recordsToUpdate = attendanceData
-      .filter(record => modifiedRows.has(record.employee_id))
+      .filter(record => modifiedRows.has(record.employee_id) && !record.markedForDeletion)
       .map(record => ({
         attendance_id: record.attendance_id || undefined,
         employee_id: record.employee_id,
@@ -36,10 +38,18 @@ export function useAttendanceActions(
         notes: record.notes,
       }));
     
+    // Records to delete
+    const recordsToDelete = Array.from(deletedRecords);
+    
     try {
       // Save updates and additions
       if (recordsToUpdate.length > 0) {
         await saveAttendanceRecords(recordsToUpdate);
+      }
+      
+      // Delete marked records
+      if (recordsToDelete.length > 0) {
+        await deleteAttendanceRecords(recordsToDelete);
       }
       
       // Refresh data after all operations are complete
@@ -70,6 +80,7 @@ export function useAttendanceActions(
     }
   }, [
     modifiedRows, 
+    deletedRecords,
     attendanceData, 
     selectedDate, 
     employees, 

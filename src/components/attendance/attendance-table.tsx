@@ -12,6 +12,7 @@ import { AttendanceTableSkeleton } from "./table/attendance-table-skeleton";
 interface AttendanceTableProps {
   attendanceData: AttendanceRecord[];
   updateAttendanceField: (employeeId: string, field: string, value: any) => void;
+  markRecordForDeletion: (attendanceId: string | undefined) => void;
   isLoading: boolean;
   modifiedRows: Set<string>;
 }
@@ -19,6 +20,7 @@ interface AttendanceTableProps {
 export function AttendanceTable({
   attendanceData,
   updateAttendanceField,
+  markRecordForDeletion,
   isLoading,
   modifiedRows,
 }: AttendanceTableProps) {
@@ -53,18 +55,24 @@ export function AttendanceTable({
     updateAttendanceField(employeeId, "notes", value || null);
   };
 
+  const handleDeleteRecord = (attendanceId: string | undefined) => {
+    markRecordForDeletion(attendanceId);
+  };
+
   if (isLoading) {
     return <AttendanceTableSkeleton />;
   }
 
-  if (attendanceData.length === 0) {
+  const filteredData = attendanceData.filter(record => !record.markedForDeletion);
+  
+  if (filteredData.length === 0) {
     return <AttendanceTableEmptyState />;
   }
 
   if (isMobile) {
     return (
       <div className="space-y-4">
-        {attendanceData.map((record) => (
+        {filteredData.map((record) => (
           <MobileAttendanceRow
             key={record.employee_id}
             record={record}
@@ -72,6 +80,7 @@ export function AttendanceTable({
             onTimeChange={handleTimeChange}
             onOvertimeChange={handleOvertimeChange}
             onNotesChange={handleNotesChange}
+            onDeleteRecord={handleDeleteRecord}
             isModified={modifiedRows.has(record.employee_id)}
           />
         ))}
@@ -92,10 +101,11 @@ export function AttendanceTable({
                 <TableHead className="w-[120px] bg-card">End Time</TableHead>
                 <TableHead className="w-[120px] bg-card">Overtime (hrs)</TableHead>
                 <TableHead className="w-[200px] bg-card">Notes</TableHead>
+                <TableHead className="w-[50px] bg-card"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {attendanceData.map((record) => (
+              {filteredData.map((record) => (
                 <DesktopAttendanceRow
                   key={record.employee_id}
                   record={record}
@@ -103,6 +113,7 @@ export function AttendanceTable({
                   onTimeChange={handleTimeChange}
                   onOvertimeChange={handleOvertimeChange}
                   onNotesChange={handleNotesChange}
+                  onDeleteRecord={handleDeleteRecord}
                   isModified={modifiedRows.has(record.employee_id)}
                 />
               ))}

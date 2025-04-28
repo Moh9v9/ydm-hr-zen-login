@@ -25,7 +25,9 @@ export function useAttendance(selectedDate: Date, filters: Filters) {
   
   const { 
     modifiedRows,
+    deletedRecords,
     updateAttendanceField, 
+    markRecordForDeletion,
     applyBulkUpdate
   } = useAttendanceModifications(attendanceData, setAttendanceData);
 
@@ -85,22 +87,25 @@ export function useAttendance(selectedDate: Date, filters: Filters) {
     selectedDate, 
     employees, 
     setOriginalData, 
-    setAttendanceData
+    setAttendanceData,
+    deletedRecords
   );
   
   // Calculate summary statistics
-  const totalEmployees = filteredAttendanceData.length;
+  const totalEmployees = filteredAttendanceData.filter(record => !record.markedForDeletion).length;
   const totalPresent = filteredAttendanceData.filter(
-    record => record.status.toLowerCase() === "present"
+    record => record.status.toLowerCase() === "present" && !record.markedForDeletion
   ).length;
   const totalAbsent = totalEmployees - totalPresent;
   
   return {
     attendanceData: filteredAttendanceData,
     modifiedRows,
+    deletedRecords,
     isLoading,
     error,
     updateAttendanceField,
+    markRecordForDeletion,
     applyBulkUpdate,
     saveChanges,
     totalEmployees,
