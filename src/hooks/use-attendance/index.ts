@@ -30,7 +30,7 @@ export function useAttendance(selectedDate: Date, filters: Filters) {
     updateAttendanceField, 
     markRecordForDeletion,
     applyBulkUpdate
-  } = useAttendanceModifications(attendanceData, setAttendanceData, filters);
+  } = useAttendanceModifications(attendanceData, setAttendanceData);
 
   // Fetch attendance data
   useEffect(() => {

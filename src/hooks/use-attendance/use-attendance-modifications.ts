@@ -1,12 +1,10 @@
 
 import { useState, useCallback } from "react";
 import { AttendanceRecord, BulkUpdateData, Filters } from "@/types/attendance";
-import { filterAttendanceData } from "@/utils/attendance-utils";
 
 export function useAttendanceModifications(
   attendanceData: AttendanceRecord[],
-  setAttendanceData: React.Dispatch<React.SetStateAction<AttendanceRecord[]>>,
-  filters: Filters
+  setAttendanceData: React.Dispatch<React.SetStateAction<AttendanceRecord[]>>
 ) {
   const [modifiedRows, setModifiedRows] = useState<Set<string>>(new Set());
   const [deletedRecords, setDeletedRecords] = useState<Set<string>>(new Set());
@@ -81,19 +79,14 @@ export function useAttendanceModifications(
     });
   }, [setAttendanceData]);
   
-  // Apply bulk update to all filtered employees
+  // Apply bulk update to all or filtered employees
   const applyBulkUpdate = useCallback((updateData: BulkUpdateData) => {
     setAttendanceData(prevData => {
-      // Filter records according to the current filters
-      const filteredRecords = filterAttendanceData(prevData, filters);
-      const filteredEmployeeIds = new Set(filteredRecords.map(record => record.employee_id));
-      
       return prevData.map(record => {
-        // Apply updates only to active employees that match the current filters
+        // Only apply to filtered records and active employees
         if (
           record.isActive && 
-          !record.markedForDeletion &&
-          filteredEmployeeIds.has(record.employee_id)
+          !record.markedForDeletion
         ) {
           const newRecord = { ...record, ...updateData };
           
@@ -123,7 +116,7 @@ export function useAttendanceModifications(
         return record;
       });
     });
-  }, [setAttendanceData, filters]);
+  }, [setAttendanceData]);
 
   return {
     modifiedRows,
