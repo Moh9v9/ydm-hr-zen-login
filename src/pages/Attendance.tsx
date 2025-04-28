@@ -9,18 +9,16 @@ import { UpdateAllModal } from "@/components/attendance/update-all-modal";
 import { useAttendance } from "@/hooks/use-attendance";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-
 export default function Attendance() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [filters, setFilters] = useState({
     project: "",
     location: "",
     paymentType: "",
-    sponsorship: "",
+    sponsorship: ""
   });
   const [isUpdateAllModalOpen, setIsUpdateAllModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  
   const {
     attendanceData,
     modifiedRows,
@@ -31,43 +29,38 @@ export default function Attendance() {
     saveChanges,
     totalEmployees,
     totalPresent,
-    totalAbsent,
+    totalAbsent
   } = useAttendance(selectedDate, filters);
 
   // If there's an error, show it
   useEffect(() => {
     if (error) {
       toast.error("Error loading attendance data", {
-        description: error.message,
+        description: error.message
       });
     }
   }, [error]);
-
   const handleSaveChanges = async () => {
     if (modifiedRows.size === 0) {
       toast.info("No changes to save");
       return;
     }
-    
     setIsSaving(true);
     try {
       await saveChanges();
       toast.success("Attendance records saved successfully");
     } catch (error) {
       toast.error("Failed to save attendance", {
-        description: error instanceof Error ? error.message : "Unknown error",
+        description: error instanceof Error ? error.message : "Unknown error"
       });
     } finally {
       setIsSaving(false);
     }
   };
-
   const formattedDate = useMemo(() => {
     return format(selectedDate, "EEEE, MMMM d, yyyy");
   }, [selectedDate]);
-
-  return (
-    <div className="flex flex-col gap-6 p-6">
+  return <div className="flex flex-col gap-6 p-6">
       <div className="flex flex-col gap-2">
         <div className="flex justify-between items-center">
           <div>
@@ -104,7 +97,7 @@ export default function Attendance() {
           <CardContent>
             <div className="text-2xl font-bold">{totalPresent}</div>
             <p className="text-xs text-muted-foreground">
-              {totalEmployees > 0 ? Math.round((totalPresent / totalEmployees) * 100) : 0}% of total
+              {totalEmployees > 0 ? Math.round(totalPresent / totalEmployees * 100) : 0}% of total
             </p>
           </CardContent>
         </Card>
@@ -118,69 +111,42 @@ export default function Attendance() {
           <CardContent>
             <div className="text-2xl font-bold">{totalAbsent}</div>
             <p className="text-xs text-muted-foreground">
-              {totalEmployees > 0 ? Math.round((totalAbsent / totalEmployees) * 100) : 0}% of total
+              {totalEmployees > 0 ? Math.round(totalAbsent / totalEmployees * 100) : 0}% of total
             </p>
           </CardContent>
         </Card>
       </div>
 
-      <AttendanceFilters
-        filters={filters}
-        setFilters={setFilters}
-        selectedDate={selectedDate}
-        setSelectedDate={setSelectedDate}
-      />
+      <AttendanceFilters filters={filters} setFilters={setFilters} selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
 
       <div className="flex flex-col gap-4">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div className="flex items-center gap-2">
-            <Calendar className="h-5 w-5 text-muted-foreground" />
-            <span className="font-medium">{formattedDate}</span>
+            
+            
           </div>
           
           <div className="flex flex-wrap gap-2">
-            {modifiedRows.size > 0 && (
-              <Badge variant="outline" className="bg-yellow-500/10 text-yellow-600 border-yellow-200 dark:text-yellow-400 dark:border-yellow-900">
+            {modifiedRows.size > 0 && <Badge variant="outline" className="bg-yellow-500/10 text-yellow-600 border-yellow-200 dark:text-yellow-400 dark:border-yellow-900">
                 {modifiedRows.size} {modifiedRows.size === 1 ? 'change' : 'changes'} pending
-              </Badge>
-            )}
+              </Badge>}
             
-            <Button
-              variant="outline"
-              onClick={() => setIsUpdateAllModalOpen(true)}
-              disabled={isLoading}
-            >
+            <Button variant="outline" onClick={() => setIsUpdateAllModalOpen(true)} disabled={isLoading}>
               Update All
             </Button>
             
-            <Button
-              onClick={handleSaveChanges}
-              disabled={modifiedRows.size === 0 || isSaving}
-            >
-              {isSaving ? (
-                "Saving..."
-              ) : (
-                <>
+            <Button onClick={handleSaveChanges} disabled={modifiedRows.size === 0 || isSaving}>
+              {isSaving ? "Saving..." : <>
                   <Save className="mr-2 h-4 w-4" />
                   Save Changes
-                </>
-              )}
+                </>}
             </Button>
           </div>
         </div>
 
-        <AttendanceTable
-          attendanceData={attendanceData}
-          updateAttendanceField={updateAttendanceField}
-          isLoading={isLoading}
-        />
+        <AttendanceTable attendanceData={attendanceData} updateAttendanceField={updateAttendanceField} isLoading={isLoading} />
       </div>
 
-      <UpdateAllModal 
-        open={isUpdateAllModalOpen}
-        onOpenChange={setIsUpdateAllModalOpen}
-        onUpdate={applyBulkUpdate}
-      />
-    </div>
-  );
+      <UpdateAllModal open={isUpdateAllModalOpen} onOpenChange={setIsUpdateAllModalOpen} onUpdate={applyBulkUpdate} />
+    </div>;
 }
