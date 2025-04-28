@@ -1,4 +1,5 @@
 
+import { useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,8 +12,6 @@ import { EmployeeInfo } from "./employee-info";
 
 interface MobileAttendanceRowProps {
   record: AttendanceRecord;
-  isExpanded: boolean;
-  onToggleExpand: (employeeId: string) => void;
   onStatusChange: (employeeId: string, currentStatus: string, isActive: boolean) => void;
   onTimeChange: (employeeId: string, field: string, value: string) => void;
   onOvertimeChange: (employeeId: string, value: string) => void;
@@ -22,20 +21,19 @@ interface MobileAttendanceRowProps {
 
 export function MobileAttendanceRow({
   record,
-  isExpanded,
-  onToggleExpand,
   onStatusChange,
   onTimeChange,
   onOvertimeChange,
   onNotesChange,
   isModified,
 }: MobileAttendanceRowProps) {
+  const [isExpanded, setIsExpanded] = useState(false);
   const isPresent = record.status.toLowerCase() === "present";
 
   return (
     <Collapsible
       open={isExpanded}
-      onOpenChange={() => onToggleExpand(record.employee_id)}
+      onOpenChange={setIsExpanded}
       className={cn(
         "border rounded-lg overflow-hidden transition-colors",
         isModified && "border-yellow-500 dark:border-yellow-600",
