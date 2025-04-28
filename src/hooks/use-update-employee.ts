@@ -49,7 +49,7 @@ export function useUpdateEmployee({ employeeId, onSuccess }: UseUpdateEmployeePr
         throw new Error("Employee not found");
       }
       
-      // Convert API response to form values format
+      // Convert API response to form values format with new allowance fields
       const formData: FormValues = {
         fullName: data.fullName || "",
         nationality: data.nationality || "",
@@ -67,6 +67,12 @@ export function useUpdateEmployee({ employeeId, onSuccess }: UseUpdateEmployeePr
         paymentType: data.paymentType || "Monthly",
         rateOfPayment: data.rateOfPayment?.toString() || "",
         attendanceRequired: data.attendance_required || false,
+        overtimeEligible: data.overtime_eligible || false,
+        lunchAllowance: data.lunch_allowance || false,
+        lunchAllowanceAmount: data.lunch_allowance_amount?.toString() || "",
+        jumaAllowance: data.juma_allowance || false,
+        jumaAllowanceAmount: data.juma_allowance_amount?.toString() || "",
+        additionalMonthly: data.additional_monthly?.toString() || "",
         comments: data.comments || "",
       };
 

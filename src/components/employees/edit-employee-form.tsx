@@ -11,6 +11,7 @@ import { PersonalInfoSection } from "./form-sections/PersonalInfoSection";
 import { LegalInfoSection } from "./form-sections/LegalInfoSection";
 import { WorkInfoSection } from "./form-sections/WorkInfoSection";
 import { CompensationSection } from "./form-sections/CompensationSection";
+import { AllowancesSection } from "./form-sections/AllowancesSection";
 import { PermissionsSection } from "./form-sections/PermissionsSection";
 import { useUpdateEmployee } from "@/hooks/use-update-employee";
 import { isEqual } from "lodash";
@@ -47,6 +48,12 @@ export function EditEmployeeForm({ employeeId, onClose }: EditEmployeeFormProps)
       paymentType: "Monthly",
       rateOfPayment: "",
       attendanceRequired: false,
+      overtimeEligible: false,
+      lunchAllowance: false,
+      lunchAllowanceAmount: "",
+      jumaAllowance: false,
+      jumaAllowanceAmount: "",
+      additionalMonthly: "",
       comments: "",
     },
   });
@@ -119,6 +126,7 @@ export function EditEmployeeForm({ employeeId, onClose }: EditEmployeeFormProps)
           <LegalInfoSection form={form} />
           <WorkInfoSection form={form} />
           <CompensationSection form={form} />
+          <AllowancesSection form={form} />
           <PermissionsSection form={form} />
 
           <div className="flex justify-end space-x-4 pt-4">
