@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useMemo } from "react";
 import { format } from "date-fns";
 import { useEmployees } from "./use-employees";
@@ -78,10 +77,8 @@ export const useAttendance = (selectedDate: Date, filters: Filters) => {
       setError(null);
       
       try {
-        // Get formatted date string for API
         const formattedDate = formatDateForAPI(selectedDate);
         
-        // Fetch attendance records for this date
         const response = await fetch("https://n8n.moh9v9.com/webhook/google-proxy", {
           method: "POST",
           headers: {
@@ -100,19 +97,13 @@ export const useAttendance = (selectedDate: Date, filters: Filters) => {
         
         const attendanceRecords = await response.json() as RawAttendanceRecord[];
         
-        // Create a map of attendance records for quick lookup
-        const attendanceMap = new Map<string, RawAttendanceRecord>();
-        attendanceRecords.forEach(record => {
-          attendanceMap.set(record.employee_id, record);
-        });
-        
         const combinedData: AttendanceRecord[] = [];
         
         if (employees) {
-          // First add all employees (active and inactive)
+          // Map each employee to their attendance record
           employees.forEach(emp => {
-            // Find attendance record for this employee (if it exists)
-            const attendanceRecord = attendanceMap.get(emp.employee_id);
+            // Find attendance record for this employee
+            const attendance = attendanceRecords.find(a => a.employee_id === emp.employee_id);
             const isActive = emp.status?.toLowerCase() === "active";
             
             // Create combined record with correct field mapping
@@ -123,24 +114,22 @@ export const useAttendance = (selectedDate: Date, filters: Filters) => {
               jobTitle: emp.jobTitle || "",
               project: emp.project || "",
               location: emp.location || "",
-              status: attendanceRecord ? attendanceRecord.status : "Absent",
+              status: attendance ? attendance.status : "Absent",
               isActive,
               paymentType: emp.paymentType || "Monthly",
               sponsorship: emp.sponsorship || "",
-              hasAttendanceRecord: !!attendanceRecord,
-              startTime: attendanceRecord?.start_time || null,
-              endTime: attendanceRecord?.end_time || null,
-              overtimeHours: attendanceRecord?.overtime !== undefined ? attendanceRecord.overtime : null,
-              notes: attendanceRecord?.note || null,
+              hasAttendanceRecord: !!attendance,
+              startTime: attendance?.start_time || null,
+              endTime: attendance?.end_time || null,
+              overtimeHours: attendance?.overtime !== undefined ? attendance.overtime : null,
+              notes: attendance?.note || null,
               date: formattedDate,
             });
           });
           
-          // Now check if there are any attendance records for employees not in our employee list
+          // Handle any attendance records for unknown employees
           attendanceRecords.forEach(record => {
-            // Skip if we've already processed this employee
             if (!combinedData.some(data => data.employee_id === record.employee_id)) {
-              // This is an attendance record for an unknown/deleted employee
               combinedData.push({
                 employee_id: record.employee_id,
                 fullName: "Unknown Employee",
@@ -163,7 +152,6 @@ export const useAttendance = (selectedDate: Date, filters: Filters) => {
           });
         }
         
-        // Copy data to set the original state for comparing changes
         setOriginalData([...combinedData]);
         setAttendanceData([...combinedData]);
         setModifiedRows(new Set());
