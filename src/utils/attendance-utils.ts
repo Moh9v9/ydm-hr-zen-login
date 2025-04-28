@@ -1,4 +1,3 @@
-
 import { Employee } from "@/hooks/use-employees";
 import { AttendanceRecord, RawAttendanceRecord, Filters } from "@/types/attendance";
 
@@ -8,34 +7,65 @@ export const combineEmployeeAndAttendanceData = (
   date: string
 ): AttendanceRecord[] => {
   const combinedData: AttendanceRecord[] = [];
-
-  employees.forEach(emp => {
-    const attendance = attendanceRecords.find(a => a.employee_id === emp.employee_id);
-    const isActive = emp.status?.toLowerCase() === "active";
-    
-    combinedData.push({
-      employee_id: emp.employee_id,
-      fullName: emp.fullName,
-      id_iqama_national: emp.id_iqama_national,
-      jobTitle: emp.jobTitle || "",
-      project: emp.project || "",
-      location: emp.location || "",
-      status: attendance ? attendance.status : "Absent",
-      isActive,
-      paymentType: emp.paymentType || "Monthly",
-      sponsorship: emp.sponsorship || "",
-      hasAttendanceRecord: !!attendance,
-      startTime: attendance?.start_time || null,
-      endTime: attendance?.end_time || null,
-      overtimeHours: attendance?.overtime !== undefined ? attendance.overtime : null,
-      notes: attendance?.note || null,
-      date,
-    });
-  });
   
-  // Handle attendance records for unknown employees
-  attendanceRecords.forEach(record => {
-    if (!combinedData.some(data => data.employee_id === record.employee_id)) {
+  // First, process all active employees
+  employees
+    .filter(emp => emp.status?.toLowerCase() === "active")
+    .forEach(emp => {
+      const attendance = attendanceRecords.find(a => a.employee_id === emp.employee_id);
+      
+      combinedData.push({
+        employee_id: emp.employee_id,
+        fullName: emp.fullName,
+        id_iqama_national: emp.id_iqama_national,
+        jobTitle: emp.jobTitle || "",
+        project: emp.project || "",
+        location: emp.location || "",
+        status: attendance ? attendance.status : "Absent",
+        isActive: true,
+        paymentType: emp.paymentType || "Monthly",
+        sponsorship: emp.sponsorship || "",
+        hasAttendanceRecord: !!attendance,
+        startTime: attendance?.start_time || null,
+        endTime: attendance?.end_time || null,
+        overtimeHours: attendance?.overtime !== undefined ? attendance.overtime : null,
+        notes: attendance?.note || null,
+        date,
+      });
+    });
+  
+  // Then, add inactive employees who have attendance records
+  employees
+    .filter(emp => emp.status?.toLowerCase() !== "active")
+    .forEach(emp => {
+      const attendance = attendanceRecords.find(a => a.employee_id === emp.employee_id);
+      
+      if (attendance) {
+        combinedData.push({
+          employee_id: emp.employee_id,
+          fullName: emp.fullName,
+          id_iqama_national: emp.id_iqama_national,
+          jobTitle: emp.jobTitle || "",
+          project: emp.project || "",
+          location: emp.location || "",
+          status: attendance.status,
+          isActive: false,
+          paymentType: emp.paymentType || "Monthly",
+          sponsorship: emp.sponsorship || "",
+          hasAttendanceRecord: true,
+          startTime: attendance.start_time || null,
+          endTime: attendance.end_time || null,
+          overtimeHours: attendance.overtime !== undefined ? attendance.overtime : null,
+          notes: attendance.note || null,
+          date,
+        });
+      }
+    });
+  
+  // Finally, add any attendance records for unknown employees
+  attendanceRecords
+    .filter(record => !employees.some(emp => emp.employee_id === record.employee_id))
+    .forEach(record => {
       combinedData.push({
         employee_id: record.employee_id,
         fullName: "Unknown Employee",
@@ -54,8 +84,7 @@ export const combineEmployeeAndAttendanceData = (
         notes: record.note || null,
         date,
       });
-    }
-  });
+    });
 
   return combinedData;
 };
