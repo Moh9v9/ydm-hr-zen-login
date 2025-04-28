@@ -40,25 +40,36 @@ export interface Employee {
 }
 
 const fetchEmployees = async (): Promise<Employee[]> => {
-  const response = await fetch("https://n8n.moh9v9.com/webhook/google-proxy", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      entity: "employees",
-      operation: "read",
-    }),
-  });
+  console.log("Fetching employees data...");
+  
+  try {
+    const response = await fetch("https://n8n.moh9v9.com/webhook/google-proxy", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        entity: "employees",
+        operation: "read",
+      }),
+    });
 
-  if (!response.ok) {
-    throw new Error("Failed to fetch employees");
+    if (!response.ok) {
+      console.error(`Error response: ${response.status} ${response.statusText}`);
+      throw new Error(`Failed to fetch employees: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("Employees data fetched successfully:", data.length || 0, "records");
+    return data;
+  } catch (error) {
+    console.error("Error fetching employees:", error);
+    throw error;
   }
-
-  return response.json();
 };
 
 const Employees = () => {
+  console.log("Rendering Employees component");
   const [searchTerm, setSearchTerm] = useState("");
   const [filters, setFilters] = useState({
     location: "all",
@@ -71,6 +82,7 @@ const Employees = () => {
   const { data: employees = [], isLoading, error } = useQuery({
     queryKey: ["employees"],
     queryFn: fetchEmployees,
+    retry: 1,
   });
 
   // Extract unique values for filters
@@ -124,9 +136,13 @@ const Employees = () => {
 
   useEffect(() => {
     if (error) {
+      console.error("Employee fetch error:", error);
       toast.error("Failed to fetch employees data. Please try again later.");
     }
   }, [error]);
+
+  // Added diagnostic render message
+  console.log("Employees render state:", { isLoading, hasData: employees?.length > 0, error });
 
   return (
     <div className="min-h-screen p-4 md:p-8">
@@ -260,6 +276,25 @@ const Employees = () => {
                 <div className="h-12 w-12 bg-muted rounded-full mb-4"></div>
                 <div className="h-4 w-48 bg-muted rounded mb-2"></div>
                 <div className="h-3 w-32 bg-muted rounded"></div>
+              </div>
+            </div>
+          ) : error ? (
+            <div className="py-16 flex justify-center">
+              <div className="flex flex-col items-center text-center">
+                <div className="bg-red-100 text-red-500 rounded-full p-3 mb-4">
+                  <X className="h-8 w-8" />
+                </div>
+                <h3 className="text-lg font-medium">Error loading employees</h3>
+                <p className="text-muted-foreground max-w-md mt-2">
+                  There was a problem fetching employee data. Please try refreshing the page.
+                </p>
+                <Button 
+                  variant="outline" 
+                  className="mt-4"
+                  onClick={() => window.location.reload()}
+                >
+                  Refresh page
+                </Button>
               </div>
             </div>
           ) : filteredEmployees.length > 0 ? (
