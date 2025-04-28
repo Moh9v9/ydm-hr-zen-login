@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useMemo } from "react";
 import { format } from "date-fns";
 import { useEmployees } from "./use-employees";
@@ -33,7 +32,6 @@ interface RawAttendanceRecord {
   end_time?: string;
   overtime?: number;
   note?: string;
-  fullName?: string;
 }
 
 interface Filters {
@@ -101,49 +99,75 @@ export const useAttendance = (selectedDate: Date, filters: Filters) => {
         
         const attendanceRecords = await response.json() as RawAttendanceRecord[];
         
-        // Map attendance records by employee_id for easier lookup
-        const attendanceMap = new Map<string, RawAttendanceRecord>();
-        attendanceRecords.forEach((record) => {
-          attendanceMap.set(record.employee_id, record);
-        });
-        
-        // Prepare data by combining employees with their attendance records
+        // Following your example pattern to map attendance records
         const combinedData: AttendanceRecord[] = [];
         
-        // First, add all active employees with or without attendance records
+        // First get all active employees
         if (employees) {
-          employees.forEach((employee) => {
-            const isActive = employee.status?.toLowerCase() === "active";
-            const attendanceRecord = attendanceMap.get(employee.employee_id);
-            const hasAttendanceRecord = !!attendanceRecord;
+          // Get all active employees
+          const activeEmployees = employees.filter(emp => emp.status?.toLowerCase() === "active");
+          
+          // Map employee data with attendance records
+          activeEmployees.forEach((emp) => {
+            // Find attendance record for this employee
+            const attendanceRecord = attendanceRecords.find(
+              (record) => record.employee_id === emp.employee_id
+            );
             
-            // Add active employees or inactive employees with attendance records
-            if (isActive || hasAttendanceRecord) {
-              combinedData.push({
-                employee_id: employee.employee_id,
-                fullName: employee.fullName,
-                id_iqama_national: employee.id_iqama_national,
-                jobTitle: employee.jobTitle || "",
-                project: employee.project || "",
-                location: employee.location || "",
-                status: hasAttendanceRecord ? attendanceRecord.status : "Absent",
-                isActive,
-                paymentType: employee.paymentType || "Monthly",
-                sponsorship: employee.sponsorship || "",
-                hasAttendanceRecord,
-                startTime: hasAttendanceRecord && attendanceRecord.start_time ? attendanceRecord.start_time : null,
-                endTime: hasAttendanceRecord && attendanceRecord.end_time ? attendanceRecord.end_time : null,
-                overtimeHours: hasAttendanceRecord && attendanceRecord.overtime ? attendanceRecord.overtime : null,
-                notes: hasAttendanceRecord && attendanceRecord.note ? attendanceRecord.note : null,
-                date: formattedDate,
-              });
-              
-              // Remove this record from the map as it's been processed
-              if (hasAttendanceRecord) {
-                attendanceMap.delete(employee.employee_id);
-              }
-            }
+            // Create combined record
+            combinedData.push({
+              employee_id: emp.employee_id,
+              fullName: emp.fullName,
+              id_iqama_national: emp.id_iqama_national,
+              jobTitle: emp.jobTitle || "",
+              project: emp.project || "",
+              location: emp.location || "",
+              status: attendanceRecord ? attendanceRecord.status : "Absent",
+              isActive: true,
+              paymentType: emp.paymentType || "Monthly",
+              sponsorship: emp.sponsorship || "",
+              hasAttendanceRecord: !!attendanceRecord,
+              startTime: attendanceRecord?.start_time || null,
+              endTime: attendanceRecord?.end_time || null,
+              overtimeHours: attendanceRecord?.overtime || null,
+              notes: attendanceRecord?.note || null,
+              date: formattedDate,
+            });
           });
+          
+          // Now add any inactive employees that have attendance records for this date
+          const inactiveEmployeesWithAttendance = attendanceRecords
+            .filter(record => {
+              // Find if this record belongs to an inactive employee
+              const employee = employees.find(emp => emp.employee_id === record.employee_id);
+              return employee && employee.status?.toLowerCase() !== "active";
+            })
+            .map(record => {
+              // Find the corresponding employee
+              const employee = employees.find(emp => emp.employee_id === record.employee_id);
+              
+              return {
+                employee_id: record.employee_id,
+                fullName: employee?.fullName || "Unknown Employee",
+                id_iqama_national: employee?.id_iqama_national || "",
+                jobTitle: employee?.jobTitle || "",
+                project: employee?.project || "",
+                location: employee?.location || "",
+                status: record.status,
+                isActive: false,
+                paymentType: employee?.paymentType || "Monthly",
+                sponsorship: employee?.sponsorship || "",
+                hasAttendanceRecord: true,
+                startTime: record.start_time || null,
+                endTime: record.end_time || null,
+                overtimeHours: record.overtime || null,
+                notes: record.note || null,
+                date: formattedDate,
+              };
+            });
+          
+          // Add inactive employees with attendance to the combined data
+          combinedData.push(...inactiveEmployeesWithAttendance);
         }
         
         // Copy data to set the original state for comparing changes
