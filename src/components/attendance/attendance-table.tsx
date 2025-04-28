@@ -12,6 +12,7 @@ import { AttendanceTableSkeleton } from "./table/attendance-table-skeleton";
 interface AttendanceTableProps {
   attendanceData: AttendanceRecord[];
   updateAttendanceField: (employeeId: string, field: string, value: any) => void;
+  markRecordForDeletion?: (employeeId: string, attendanceId?: string) => void;
   isLoading: boolean;
   modifiedRows: Set<string>;
 }
@@ -19,6 +20,7 @@ interface AttendanceTableProps {
 export function AttendanceTable({
   attendanceData,
   updateAttendanceField,
+  markRecordForDeletion,
   isLoading,
   modifiedRows,
 }: AttendanceTableProps) {
@@ -72,6 +74,7 @@ export function AttendanceTable({
             onTimeChange={handleTimeChange}
             onOvertimeChange={handleOvertimeChange}
             onNotesChange={handleNotesChange}
+            onDeleteRecord={markRecordForDeletion}
             isModified={modifiedRows.has(record.employee_id)}
           />
         ))}
@@ -92,6 +95,7 @@ export function AttendanceTable({
                 <TableHead className="w-[120px] bg-card">End Time</TableHead>
                 <TableHead className="w-[120px] bg-card">Overtime (hrs)</TableHead>
                 <TableHead className="w-[200px] bg-card">Notes</TableHead>
+                <TableHead className="w-[60px] bg-card">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -103,6 +107,7 @@ export function AttendanceTable({
                   onTimeChange={handleTimeChange}
                   onOvertimeChange={handleOvertimeChange}
                   onNotesChange={handleNotesChange}
+                  onDeleteRecord={markRecordForDeletion}
                   isModified={modifiedRows.has(record.employee_id)}
                 />
               ))}

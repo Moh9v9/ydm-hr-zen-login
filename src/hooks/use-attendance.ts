@@ -3,13 +3,14 @@ import { useState, useEffect, useMemo } from "react";
 import { format, isFriday } from "date-fns";
 import { useEmployees } from "./use-employees";
 import { type AttendanceRecord, type Filters, type BulkUpdateData } from "@/types/attendance";
-import { fetchAttendanceRecords, saveAttendanceRecords } from "@/services/attendance-service";
+import { fetchAttendanceRecords, saveAttendanceRecords, deleteAttendanceRecords } from "@/services/attendance-service";
 import { combineEmployeeAndAttendanceData, filterAttendanceData } from "@/utils/attendance-utils";
 
 export function useAttendance(selectedDate: Date, filters: Filters) {
   const [attendanceData, setAttendanceData] = useState<AttendanceRecord[]>([]);
   const [originalData, setOriginalData] = useState<AttendanceRecord[]>([]);
   const [modifiedRows, setModifiedRows] = useState<Set<string>>(new Set());
+  const [deletedRecords, setDeletedRecords] = useState<Set<string>>(new Set());
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   
@@ -49,6 +50,7 @@ export function useAttendance(selectedDate: Date, filters: Filters) {
           setOriginalData([...normalizedData]);
           setAttendanceData([...normalizedData]);
           setModifiedRows(new Set());
+          setDeletedRecords(new Set());
         }
       } catch (err) {
         console.error("Error fetching attendance:", err);
@@ -99,6 +101,35 @@ export function useAttendance(selectedDate: Date, filters: Filters) {
     });
   };
   
+  // Mark a record for deletion
+  const markRecordForDeletion = (employeeId: string, attendanceId?: string) => {
+    if (!attendanceId) return;
+    
+    setAttendanceData(prevData => {
+      return prevData.map(record => {
+        if (record.employee_id === employeeId && record.attendance_id === attendanceId) {
+          setModifiedRows(prev => {
+            const next = new Set(prev);
+            next.add(employeeId);
+            return next;
+          });
+          
+          setDeletedRecords(prev => {
+            const next = new Set(prev);
+            next.add(attendanceId);
+            return next;
+          });
+          
+          return {
+            ...record,
+            markedForDeletion: true
+          };
+        }
+        return record;
+      });
+    });
+  };
+  
   // Apply bulk update to all or filtered employees
   const applyBulkUpdate = (updateData: BulkUpdateData) => {
     setAttendanceData(prevData => {
@@ -106,6 +137,7 @@ export function useAttendance(selectedDate: Date, filters: Filters) {
         // Only apply to filtered records and active employees
         if (
           record.isActive && 
+          !record.markedForDeletion &&
           (filters.project === "" || record.project === filters.project) &&
           (filters.location === "" || record.location === filters.location) &&
           (filters.paymentType === "" || record.paymentType === filters.paymentType) &&
@@ -145,8 +177,9 @@ export function useAttendance(selectedDate: Date, filters: Filters) {
   const saveChanges = async () => {
     if (modifiedRows.size === 0) return;
     
+    // Records to update or add (not marked for deletion)
     const recordsToUpdate = attendanceData
-      .filter(record => modifiedRows.has(record.employee_id))
+      .filter(record => modifiedRows.has(record.employee_id) && !record.markedForDeletion)
       .map(record => ({
         attendance_id: record.attendance_id || undefined,
         employee_id: record.employee_id,
@@ -159,10 +192,45 @@ export function useAttendance(selectedDate: Date, filters: Filters) {
         notes: record.notes,
       }));
     
+    // Records to delete
+    const recordsToDelete = Array.from(deletedRecords).map(id => ({
+      attendance_id: id
+    }));
+    
     try {
-      await saveAttendanceRecords(recordsToUpdate);
-      setOriginalData([...attendanceData]);
-      setModifiedRows(new Set());
+      // Save updates and additions
+      if (recordsToUpdate.length > 0) {
+        await saveAttendanceRecords(recordsToUpdate);
+      }
+      
+      // Delete marked records
+      if (recordsToDelete.length > 0) {
+        await deleteAttendanceRecords(recordsToDelete);
+      }
+      
+      // Refresh data after all operations are complete
+      const refreshedRecords = await fetchAttendanceRecords(selectedDate);
+      const formattedDate = format(selectedDate, "yyyy-MM-dd");
+      
+      if (employees) {
+        const combinedData = combineEmployeeAndAttendanceData(
+          employees,
+          refreshedRecords,
+          formattedDate
+        );
+        
+        // Ensure proper capitalization of status values
+        const normalizedData = combinedData.map(record => ({
+          ...record,
+          status: record.status.charAt(0).toUpperCase() + record.status.slice(1).toLowerCase()
+        }));
+        
+        setOriginalData([...normalizedData]);
+        setAttendanceData([...normalizedData]);
+        setModifiedRows(new Set());
+        setDeletedRecords(new Set());
+      }
+      
       return true;
     } catch (error) {
       console.error("Error saving attendance:", error);
@@ -173,16 +241,18 @@ export function useAttendance(selectedDate: Date, filters: Filters) {
   // Calculate summary statistics
   const totalEmployees = filteredAttendanceData.length;
   const totalPresent = filteredAttendanceData.filter(
-    record => record.status.toLowerCase() === "present"
+    record => record.status.toLowerCase() === "present" && !record.markedForDeletion
   ).length;
   const totalAbsent = totalEmployees - totalPresent;
   
   return {
     attendanceData: filteredAttendanceData,
     modifiedRows,
+    deletedRecords,
     isLoading,
     error,
     updateAttendanceField,
+    markRecordForDeletion,
     applyBulkUpdate,
     saveChanges,
     totalEmployees,

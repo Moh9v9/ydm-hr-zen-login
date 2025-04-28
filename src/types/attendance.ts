@@ -17,6 +17,7 @@ export interface AttendanceRecord {
   notes: string | null;
   date: string;
   attendance_id?: string;
+  markedForDeletion?: boolean;
 }
 
 export interface RawAttendanceRecord {

@@ -25,9 +25,11 @@ export default function Attendance() {
   const {
     attendanceData,
     modifiedRows,
+    deletedRecords,
     isLoading,
     error,
     updateAttendanceField,
+    markRecordForDeletion,
     applyBulkUpdate,
     saveChanges,
     totalEmployees,
@@ -51,7 +53,17 @@ export default function Attendance() {
     setIsSaving(true);
     try {
       await saveChanges();
-      toast.success("Attendance updated successfully");
+      
+      // Show appropriate toast messages
+      if (deletedRecords.size > 0) {
+        if (modifiedRows.size > deletedRecords.size) {
+          toast.success(`${deletedRecords.size} records deleted and other changes saved successfully`);
+        } else {
+          toast.success(`${deletedRecords.size} attendance record(s) deleted successfully`);
+        }
+      } else {
+        toast.success("Attendance updated successfully");
+      }
     } catch (error) {
       toast.error("Failed to save attendance. Please try again.", {
         description: error instanceof Error ? error.message : "Unknown error"
@@ -99,6 +111,7 @@ export default function Attendance() {
         <AttendanceTable
           attendanceData={attendanceData}
           updateAttendanceField={updateAttendanceField}
+          markRecordForDeletion={markRecordForDeletion}
           isLoading={isLoading}
           modifiedRows={modifiedRows}
         />
