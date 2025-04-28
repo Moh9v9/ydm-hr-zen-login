@@ -76,13 +76,6 @@ export default function Attendance() {
         </p>
       </div>
 
-      <AttendanceFilters
-        filters={filters}
-        setFilters={setFilters}
-        selectedDate={selectedDate}
-        setSelectedDate={setSelectedDate}
-      />
-
       <div className="grid gap-6 md:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
@@ -123,6 +116,13 @@ export default function Attendance() {
           </CardContent>
         </Card>
       </div>
+
+      <AttendanceFilters
+        filters={filters}
+        setFilters={setFilters}
+        selectedDate={selectedDate}
+        setSelectedDate={setSelectedDate}
+      />
 
       <div className="flex flex-col gap-4">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
