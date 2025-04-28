@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { AlertTriangle } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -48,6 +47,10 @@ export function AttendanceTable({
       updateAttendanceField(employeeId, "startTime", null);
       updateAttendanceField(employeeId, "endTime", null);
       updateAttendanceField(employeeId, "overtimeHours", null);
+    } else {
+      // Set default times when changing to Present
+      updateAttendanceField(employeeId, "startTime", "07:00 am");
+      updateAttendanceField(employeeId, "endTime", "05:00 pm");
     }
   };
 
