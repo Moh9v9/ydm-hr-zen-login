@@ -1,14 +1,17 @@
 
 import { useState } from "react";
+import { AlertTriangle, ChevronDown, ChevronUp } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { cn } from "@/lib/utils";
 import { type AttendanceRecord } from "@/hooks/use-attendance";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { StatusControls } from "./status-controls";
-import { EmployeeInfo } from "./employee-info";
-import { TimeInputs } from "./time-inputs";
-import { MobileAttendanceRow } from "./mobile-attendance-row";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface AttendanceTableProps {
   attendanceData: AttendanceRecord[];
@@ -39,15 +42,29 @@ export function AttendanceTable({
   };
 
   const handleToggleStatus = (employeeId: string, currentStatus: string, isActive: boolean) => {
-    if (!isActive) return;
+    if (!isActive) return; // Prevent toggling for inactive employees
     const newStatus = currentStatus === "Present" ? "Absent" : "Present";
     updateAttendanceField(employeeId, "status", newStatus);
     
+    // If changing to Absent, clear time-related fields
     if (newStatus === "Absent") {
       updateAttendanceField(employeeId, "startTime", null);
       updateAttendanceField(employeeId, "endTime", null);
       updateAttendanceField(employeeId, "overtimeHours", null);
     }
+  };
+  
+  const handleTimeChange = (employeeId: string, field: string, value: string) => {
+    updateAttendanceField(employeeId, field, value || null);
+  };
+  
+  const handleOvertimeChange = (employeeId: string, value: string) => {
+    const numericValue = value === "" ? null : parseFloat(value);
+    updateAttendanceField(employeeId, "overtimeHours", numericValue);
+  };
+  
+  const handleNotesChange = (employeeId: string, value: string) => {
+    updateAttendanceField(employeeId, "notes", value || null);
   };
   
   if (isLoading) {
@@ -64,6 +81,9 @@ export function AttendanceTable({
   if (attendanceData.length === 0) {
     return (
       <div className="text-center py-12">
+        <div className="flex justify-center mb-4">
+          <AlertTriangle className="h-12 w-12 text-yellow-500" />
+        </div>
         <h3 className="text-lg font-medium">No attendance records found</h3>
         <p className="text-muted-foreground mt-1">
           Try adjusting your filters or date selection
@@ -77,22 +97,126 @@ export function AttendanceTable({
     return (
       <div className="space-y-4">
         {attendanceData.map((record) => (
-          <MobileAttendanceRow
-            key={record.employee_id}
-            record={record}
-            isExpanded={expandedRows.has(record.employee_id)}
-            isModified={modifiedRows.has(record.employee_id)}
-            onToggleExpand={() => toggleRowExpansion(record.employee_id)}
-            onToggleStatus={() => handleToggleStatus(record.employee_id, record.status, record.isActive)}
-            onTimeChange={(field, value) => updateAttendanceField(record.employee_id, field, value)}
-            onNotesChange={(value) => updateAttendanceField(record.employee_id, "notes", value)}
-          />
+          <Collapsible 
+            key={record.employee_id} 
+            open={expandedRows.has(record.employee_id)}
+            onOpenChange={() => toggleRowExpansion(record.employee_id)}
+            className={cn(
+              "border rounded-lg overflow-hidden transition-colors",
+              modifiedRows.has(record.employee_id) && "border-yellow-500 dark:border-yellow-600",
+              !record.isActive && "bg-gray-100 dark:bg-gray-800/50"
+            )}
+          >
+            <div className="p-4">
+              <CollapsibleTrigger className="flex w-full items-center justify-between">
+                <div>
+                  <div className="font-medium flex items-center gap-2">
+                    {record.fullName}
+                    {!record.isActive && (
+                      <Badge variant="outline" className="ml-1 text-xs bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 border-red-200 dark:border-red-800">
+                        Inactive
+                      </Badge>
+                    )}
+                    {modifiedRows.has(record.employee_id) && (
+                      <Badge variant="outline" className="ml-1 text-xs bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800">
+                        Modified
+                      </Badge>
+                    )}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    {record.id_iqama_national}
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  {/* Status toggle for mobile view */}
+                  <div className="flex items-center gap-2">
+                    <Switch 
+                      checked={record.status === "Present"}
+                      onCheckedChange={() => handleToggleStatus(record.employee_id, record.status, record.isActive)}
+                      disabled={!record.isActive}
+                      className={cn(
+                        record.status === "Present" 
+                          ? "bg-green-500 dark:bg-green-600" 
+                          : "bg-red-500 dark:bg-red-600"
+                      )}
+                    />
+                    <span className={cn(
+                      "font-medium text-sm",
+                      record.status === "Present" 
+                        ? "text-green-600 dark:text-green-400" 
+                        : "text-red-600 dark:text-red-400"
+                    )}>
+                      {record.status}
+                    </span>
+                  </div>
+                  {!record.hasAttendanceRecord && (
+                    <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                  )}
+                  {expandedRows.has(record.employee_id) ? (
+                    <ChevronUp className="h-4 w-4" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4" />
+                  )}
+                </div>
+              </CollapsibleTrigger>
+            </div>
+            <CollapsibleContent>
+              <div className="px-4 pb-4 space-y-3">
+                <div className="grid grid-cols-1 gap-2">
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground mb-1 block">Start Time</label>
+                    <Input 
+                      type="text" 
+                      placeholder="-- : --" 
+                      value={record.startTime || ""} 
+                      onChange={e => handleTimeChange(record.employee_id, "startTime", e.target.value)}
+                      disabled={record.status !== "Present" || !record.isActive} 
+                      className="w-full"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground mb-1 block">End Time</label>
+                    <Input 
+                      type="text" 
+                      placeholder="-- : --" 
+                      value={record.endTime || ""} 
+                      onChange={e => handleTimeChange(record.employee_id, "endTime", e.target.value)}
+                      disabled={record.status !== "Present" || !record.isActive} 
+                      className="w-full"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground mb-1 block">Overtime (hrs)</label>
+                    <Input 
+                      type="number" 
+                      min="0" 
+                      step="0.5" 
+                      value={record.overtimeHours !== null ? record.overtimeHours : ""}
+                      onChange={e => handleOvertimeChange(record.employee_id, e.target.value)}
+                      disabled={record.status !== "Present" || !record.isActive} 
+                      className="w-full"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground mb-1 block">Notes</label>
+                    <Textarea 
+                      value={record.notes || ""} 
+                      onChange={e => handleNotesChange(record.employee_id, e.target.value)}
+                      disabled={record.status !== "Present" || !record.isActive} 
+                      className="min-h-[80px] max-h-[120px] w-full" 
+                      placeholder="Add notes" 
+                    />
+                  </div>
+                </div>
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
         ))}
       </div>
     );
   }
   
-  // Desktop View
+  // Desktop/Tablet View
   return (
     <div className="rounded-md border shadow-sm overflow-hidden bg-card">
       <ScrollArea className="h-[calc(100vh-26rem)]">
@@ -109,49 +233,110 @@ export function AttendanceTable({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {attendanceData.map(record => {
-                const isPresent = record.status.toLowerCase() === "present";
-                
-                return (
-                  <TableRow key={record.employee_id}>
-                    <TableCell>
-                      <EmployeeInfo
-                        fullName={record.fullName}
-                        idNumber={record.id_iqama_national}
-                        isActive={record.isActive}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <StatusControls
-                        status={record.status}
-                        isActive={record.isActive}
-                        hasAttendanceRecord={record.hasAttendanceRecord}
-                        onToggleStatus={() => handleToggleStatus(record.employee_id, record.status, record.isActive)}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <TimeInputs
-                        startTime={record.startTime}
-                        endTime={record.endTime}
-                        overtimeHours={record.overtimeHours}
-                        isEditable={isPresent && record.isActive}
-                        onStartTimeChange={(value) => updateAttendanceField(record.employee_id, "startTime", value)}
-                        onEndTimeChange={(value) => updateAttendanceField(record.employee_id, "endTime", value)}
-                        onOvertimeChange={(value) => updateAttendanceField(record.employee_id, "overtimeHours", value)}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Textarea 
-                        value={record.notes || ""} 
-                        onChange={e => updateAttendanceField(record.employee_id, "notes", e.target.value)}
-                        disabled={!isPresent || !record.isActive} 
-                        className="min-h-[50px] max-h-[100px]" 
-                        placeholder="Add notes" 
-                      />
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+              {attendanceData.map(record => (
+                <TableRow 
+                  key={record.employee_id} 
+                  className={cn(
+                    "transition-colors",
+                    modifiedRows.has(record.employee_id) && "bg-yellow-50/50 dark:bg-yellow-900/20",
+                    !record.isActive && "bg-gray-100 dark:bg-gray-800/50"
+                  )}
+                >
+                  <TableCell>
+                    <div className="flex flex-col">
+                      <div className="font-medium flex items-center gap-2">
+                        {record.fullName}
+                        {!record.isActive && (
+                          <Badge 
+                            variant="outline" 
+                            className="ml-1 text-xs bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 border-red-200 dark:border-red-800"
+                          >
+                            Inactive
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {record.id_iqama_national}
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2">
+                        <Switch 
+                          checked={record.status === "Present"}
+                          onCheckedChange={() => handleToggleStatus(record.employee_id, record.status, record.isActive)}
+                          disabled={!record.isActive}
+                          className={cn(
+                            record.status === "Present" 
+                              ? "bg-green-500 dark:bg-green-600" 
+                              : "bg-red-500 dark:bg-red-600"
+                          )}
+                        />
+                        <span className={cn(
+                          "font-medium text-sm",
+                          record.status === "Present" 
+                            ? "text-green-600 dark:text-green-400" 
+                            : "text-red-600 dark:text-red-400"
+                        )}>
+                          {record.status}
+                        </span>
+                      </div>
+                      {!record.hasAttendanceRecord && (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <div className="flex items-center">
+                                <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>No attendance record for today</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                     <Input 
+                       type="text" 
+                       placeholder="-- : --" 
+                       value={record.startTime || ""} 
+                       onChange={e => handleTimeChange(record.employee_id, "startTime", e.target.value)}
+                       disabled={record.status !== "Present" || !record.isActive} 
+                     />
+                  </TableCell>
+                  <TableCell>
+                    <Input 
+                      type="text" 
+                      placeholder="-- : --" 
+                      value={record.endTime || ""} 
+                      onChange={e => handleTimeChange(record.employee_id, "endTime", e.target.value)}
+                      disabled={record.status !== "Present" || !record.isActive} 
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Input 
+                      type="number" 
+                      min="0" 
+                      step="0.5" 
+                      value={record.overtimeHours !== null ? record.overtimeHours : ""}
+                      onChange={e => handleOvertimeChange(record.employee_id, e.target.value)}
+                      disabled={record.status !== "Present" || !record.isActive} 
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Textarea 
+                      value={record.notes || ""} 
+                      onChange={e => handleNotesChange(record.employee_id, e.target.value)}
+                      disabled={record.status !== "Present" || !record.isActive} 
+                      className="min-h-[50px] max-h-[100px]" 
+                      placeholder="Add notes" 
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </div>
